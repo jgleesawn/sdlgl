@@ -16,3 +16,6 @@ all:	main.o
 	g++ main.o -o sfml-app $(LibPath) $(Libs)
 main.o:
 	g++ -c main.cpp $(IncPath)
+
+clean:
+	rm -Rf *.o sfml-app
