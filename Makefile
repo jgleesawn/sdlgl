@@ -12,7 +12,7 @@ LibPath=$(SFMLLibPath) $(GLEWLibPath) $(LIBJPEGPath)
 
 Libs=$(GLLibs) $(SFMLLibs)
 
-all:	main.o
+all:	clean main.o
 	g++ main.o -o sfml-app $(LibPath) $(Libs)
 main.o:
 	g++ -c main.cpp $(IncPath)
