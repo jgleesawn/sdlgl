@@ -1,5 +1,5 @@
-SFMLIncludePath=-I/home/tc/SFML-2.1/include
-SFMLLibPath=-L/home/tc/SFML-2.1/lib
+SFMLIncludePath=-I./SFML-2.1/include
+SFMLLibPath=-L./SFML-2.1/lib
 
 GLEWLibPath=-L./glew-1.7.0/lib
 LIBJPEGPath=-L./jpeg-8/.libs
