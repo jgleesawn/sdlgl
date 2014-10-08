@@ -52,7 +52,7 @@ $(___objs): $(OBJDIR)/%.o: %.cpp
 
 clean:
 	rm -Rf *.o sfml-app
-	rm -Rf */*.o
+	rm -Rf build/*
 
 setup:
 	sudo ./run.sh
