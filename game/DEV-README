@@ -1,0 +1,2 @@
+Look at how generator/generator engine is layed out and interacts with PhysicsEngine.
+This should be close to the standard method for doing so.
