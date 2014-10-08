@@ -15,19 +15,19 @@ LIBJPEGPath=-L./$(deppath)/jpeg-8/.libs
 SFMLLibs=-lsfml-graphics -lsfml-window -lsfml-system -ljpeg
 GLLibs=-lGL -lGLEW -lGLU
 
-IncPath=$(SFMLIncludePath) $(CLINCLUDE)
+IncPath=-I./ $(SFMLIncludePath) $(CLINCLUDE)
 LibPath=$(SFMLLibPath) $(GLEWLibPath) $(LIBJPEGPath)
 
 Libs=$(GLLibs) $(SFMLLibs) $(CLLIBS)
 
-FILES= main.cpp generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp object.cpp
-OBJS= main.o generator.o clengine.o shader_util.o physicsengine.o object.o
-
 filedir=generator
 OBJDIR=build
 
-files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp object.cpp)
-objects=$(addprefix $(OBJDIR)/, main.o generator.o clengine.o shader_util.o physicsengine.o object.o)
+files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
+gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
+cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
+___objs=$(addprefix $(OBJDIR)/, main.o)
+objects=$(gen_objs) $(cle_objs) $(___objs)
 
 
 CPPFLAGS=$(IncPath)
@@ -43,9 +43,11 @@ debug: executable
 executable: $(objects)
 	$(CC) $^ -o sfml-app $(LibPath) $(Libs)
 
-$(OBJDIR)/%.o: generator/%.cpp
+$(gen_objs): $(OBJDIR)/%.o: generator/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
-$(OBJDIR)/%.o: %.cpp
+$(cle_objs): $(OBJDIR)/%.o: clengine/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
+$(___objs): $(OBJDIR)/%.o: %.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 
 clean:

@@ -1,12 +1,10 @@
-#include "physicsengine.h"
-#include "object.h"
+#include "generatorengine.h"
 
 class Generator {
-		PhysicsEngine * pe;
-		Object * obj;
+		GeneratorEngine ge;
 		int width,height;
 	public:
-		Generator(int, int);
+		Generator(int, int, CLEngine * cle_in=NULL);
 		~Generator();
 		unsigned char * getBuffer();
 		void stepSim(int);

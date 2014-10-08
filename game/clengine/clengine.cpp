@@ -1,14 +1,14 @@
 #include "clengine.h"
 
-CLEngine::CLEngine() {}
+CLEngine::CLEngine(): isInit(false) {}
 CLEngine::~CLEngine() {
 	cl_int err;
-	err = clReleaseProgram(program);
-	if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release program."); }
+	err = clReleaseCommandQueue(queue);
+	if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release command queue."); }
 	err = clReleaseContext(context);
 	if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release context."); }
 }
-void CLEngine::_init() {
+void CLEngine::Init() {
 	int err;
 	cl_uint np;
 	cl_platform_id platform;
@@ -60,9 +60,18 @@ void CLEngine::_init() {
 	context = clCreateContext(properties, 1, &device, NULL, NULL, &err);
 	if(err < 0) { perror("Couldn't create a context."); exit(1); }
 	fprintf(stderr,"PEC: %i\n", context);
+
+	queue = clCreateCommandQueue(context, device, 0, &err);
+	if(err < 0) { perror("Couldn't create a command queue"); exit(1); }
+
+	isInit = true;
 }
 
-void CLEngine::InitializeProgram(const char * filename) {
+bool CLEngine::IsInit() {
+	return isInit;
+}
+
+void CLEngine::InitializeProgram(const char * filename, cl_program & program) {
 	int err;
 	std::string progData = getFile(filename);
 
