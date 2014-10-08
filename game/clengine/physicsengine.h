@@ -20,17 +20,16 @@ protected:
 
 	bool cle_owner;
 public:
-	PhysicsEngine(std::string physicsFile, CLEngine * cle_in=NULL);
+	PhysicsEngine(const char * physicsFile, CLEngine * cle_in=NULL);
 	~PhysicsEngine();
 
 	CLEngine * getCLEngine() { return cle; }
 
-	void Init(std::string, std::vector<const char *>);
 	void LoadKernel(const char *);
 
-	unsigned char * getBuffer(int, int, size_t, size_t);
+	void * getBuffer(int, int, size_t, size_t);
 
-	virtual void Step(void *);
+	virtual void Step(void *) = 0;
 };
 
 #endif

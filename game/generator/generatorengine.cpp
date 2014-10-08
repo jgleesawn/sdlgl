@@ -1,9 +1,10 @@
 #include "generatorengine.h"
 
-GeneratorEngine::GeneratorEngine(int num,CLEngine * cle_in) : PhysicsEngine("generator/physics.cl", cle_in) { 
+GeneratorEngine::GeneratorEngine(int num,CLEngine * cle_in) : PhysicsEngine("game/generator/physics.cl", cle_in) { 
 	int err;
 	numPixels = num;
 	LoadKernel("pixelInteract");
+
 	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
 	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
