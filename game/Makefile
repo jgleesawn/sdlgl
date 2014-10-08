@@ -1,5 +1,8 @@
 deppath=../deps/
 
+CC=g++
+CXX=g++
+
 SFMLIncludePath=-I./$(deppath)/SFML-2.1/include
 SFMLLibPath=-L./$(deppath)/SFML-2.1/lib
 
@@ -20,17 +23,31 @@ Libs=$(GLLibs) $(SFMLLibs) $(CLLIBS)
 FILES= main.cpp generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp object.cpp
 OBJS= main.o generator.o clengine.o shader_util.o physicsengine.o object.o
 
-all:	clean objs
-	g++ $(OBJS) -o sfml-app $(LibPath) $(Libs)
+filedir=generator
+OBJDIR=build
 
-debug: clean objs
-	g++ -g $(OBJS) -o sfml-app $(LibPath) $(Libs)
+objects=$(addprefix $(OBJDIR)/, generator.o clengine.o shader_util.o physicsengine.o object.o)
 
-objs:
-	g++ -c $(FILES) $(IncPath)
+
+CPPFLAGS=$(IncPath)
+CFLAGS=$(IncPath)
+
+all:	executable
+
+debug: clean
+debug: CXX += -g
+debug: CC += -g
+debug: executable
+
+executable: $(objects) main.o
+	$(CC) $^ -o sfml-app $(LibPath) $(Libs)
+
+$(OBJDIR)/%.o: $(filedir)/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
 
 clean:
 	rm -Rf *.o sfml-app
+	rm -Rf */*.o
 
 setup:
 	sudo ./run.sh

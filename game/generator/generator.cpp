@@ -3,7 +3,7 @@
 Generator::Generator(int w, int h) {
 	width = w;
 	height = h;
-	pe = new PhysicsEngine("game/generator_physics.cl");
+	pe = new PhysicsEngine("game/generator/physics.cl");
 	obj = new Object(pe, width, height);
 }
 
