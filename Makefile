@@ -1,7 +1,11 @@
 all:
 	cd game; make
-	cd generator; make
+
+debug:
+	cd game; make debug
 
 clean:
 	cd game; make clean
-	cd generator; make clean
+
+setup:
+	cd game; make setup
