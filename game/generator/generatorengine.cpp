@@ -12,6 +12,13 @@ GeneratorEngine::GeneratorEngine(int num,CLEngine * cle_in) : PhysicsEngine("gam
 
 	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_WRITE, 4*sizeof(cl_float)*numPixels, NULL, &err));
 	if( err < 0 ) { perror("Could not create vec4<float> buffer."); exit(1); }
+
+	float * buf = new float[4*numPixels];
+	for( int i=0; i<4*numPixels; i++)
+		buf[i] = rand()%256;
+	clEnqueueWriteBuffer(cle->getQueue(), input[0][2], CL_TRUE, 0, 4*numPixels*sizeof(cl_float), buf, 0, NULL, NULL);
+	delete buf;
+	
 }
 
 GeneratorEngine::~GeneratorEngine() { }
