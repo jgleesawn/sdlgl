@@ -1,3 +1,6 @@
+#ifndef GENERATOR_H
+#define GENERATOR_H
+
 #include "generatorengine.h"
 
 class Generator {
@@ -11,3 +14,4 @@ class Generator {
 		int Size();
 };
 
+#endif
