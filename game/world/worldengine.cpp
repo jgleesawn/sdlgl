@@ -107,6 +107,7 @@ void WorldEngine::Step(void * in) {
 	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(float), &movMod, 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error writing float."); exit(1); }
 
+//	fprintf(stderr, "%i objects in input\n", input[0].size());
 	err = clEnqueueAcquireGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
 //	fprintf(stderr,"%i\n", err);
 	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); exit(1); }

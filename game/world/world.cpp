@@ -28,6 +28,7 @@ unsigned char * World::getBuffer() {
 
 void World::stepSim(int numSteps) {
 	//Stop-gap
+	rt.setActive(true);
 	rt.clear();
 	sf::CircleShape c1(100.f);
 	c1.setFillColor(sf::Color(0,255,0,1));
@@ -39,6 +40,8 @@ void World::stepSim(int numSteps) {
 	rt.draw(c2);
 	//rt.draw(* objs[1]->curAnimation());
 	rt.display();
+	rt.setActive(false);
+	glFinish();
 	
 	wePasser wp;
 	wp.rt = &rt;
