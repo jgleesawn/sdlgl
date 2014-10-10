@@ -16,9 +16,6 @@ WorldEngine::WorldEngine(CLEngine * cle_in) : PhysicsEngine("game/world/physics.
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
 	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_WRITE, sizeof(float), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
-	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-
 }
 
 WorldEngine::~WorldEngine() { }
@@ -28,11 +25,11 @@ void WorldEngine::Init(const sf::Texture & bgTex) {
 	sf::Texture::bind(& bgTex);
 	glGetIntegerv( GL_TEXTURE_BINDING_2D, &bgTex_id );
 	glFinish();
-	printf("%i\n",bgTex_id);
+//	fprintf(stderr,"%i\n",bgTex_id);
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, bgTex_id, &err) );
-	printf("%i\n",err);
+//	fprintf(stderr,"%i\n",err);
 	if( err < 0 ) { perror("Could not create texture buffer."); exit(1); }
 }
 
@@ -41,11 +38,11 @@ void WorldEngine::addTexture(const sf::Texture & newTex) {
 	sf::Texture::bind(& newTex);
 	glGetIntegerv( GL_TEXTURE_BINDING_2D, &newTex_id );
 	glFinish();
-	printf("%i\n",newTex_id);
+//	fprintf(stderr,"%i\n",newTex_id);
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, newTex_id, &err) );
-	printf("%i\n",err);
+//	fprintf(stderr,"%i\n",err);
 	if( err < 0 ) { perror("Could not create texture buffer."); exit(1); }
 }
 
@@ -68,14 +65,29 @@ void WorldEngine::Step(void * in) {
 
 	int wgs = cle->getWorkGroupSize();
 
-	int numPixels = w*h;
-	int diff = wgs - numPixels % wgs;
-	const size_t osize = numPixels+diff;
-	const size_t globalNum = osize;
-	size_t localNum = wgs;
-	if( osize < wgs )
-		localNum = osize;
-	const size_t numGroups = (globalNum/localNum)+1;
+	size_t globalNum[2];
+	globalNum[0] = w;
+	globalNum[1] = h;
+	size_t localNum[2];
+	localNum[0] = 8;
+	localNum[1] = 8;
+	if( globalNum[0] < localNum[0] )
+		localNum[0] = globalNum[0];
+	else
+		globalNum[0] += globalNum[0] % 8;
+	if( globalNum[1] < localNum[1] )
+		localNum[1] = globalNum[1];
+	else
+		globalNum[1] += globalNum[1] % 8;
+
+//	int numPixels = w*h;
+//	int diff = wgs - numPixels % wgs;
+//	const size_t osize = numPixels+diff;
+//	const size_t globalNum = osize;
+//	size_t localNum = wgs;
+//	if( osize < wgs )
+//		localNum = osize;
+	const size_t numGroups = (globalNum[0]/localNum[0])*(globalNum[1]/localNum[1]);
 
 	//Returns if pointer is null
 //	if(input[0][2] == 0) { return; }
@@ -88,10 +100,11 @@ void WorldEngine::Step(void * in) {
 	clEnqueueWriteBuffer(cle->getQueue(), input[0][3], CL_FALSE, 0, sizeof(int), &h, 0, NULL, NULL);
 	clEnqueueWriteBuffer(cle->getQueue(), input[0][4], CL_FALSE, 0, sizeof(int), &spriteFrame, 0, NULL, NULL);
 	clEnqueueWriteBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(float), &movMod, 0, NULL, NULL);
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][6], CL_FALSE, 0, sizeof(int), &bgWidth, 0, NULL, NULL);
 
-	clEnqueueAcquireGLObjects(cle->getQueue(), 2, &input[0][7], 0, NULL, NULL);
-
+	err = clEnqueueAcquireGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
+//	fprintf(stderr,"%i\n", err);
+	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); }
+	
 	err  = clSetKernelArg(kernel, 0, sizeof(cl_mem), &input[0][0]);
 	err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &input[0][1]);
 	err |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &input[0][2]);
@@ -99,24 +112,22 @@ void WorldEngine::Step(void * in) {
 	err |= clSetKernelArg(kernel, 4, sizeof(cl_mem), &input[0][4]);
 	err |= clSetKernelArg(kernel, 5, sizeof(cl_mem), &input[0][5]);
 	err |= clSetKernelArg(kernel, 6, sizeof(cl_mem), &input[0][6]);
-	fprintf(stderr,"%i\n", err);
 	err |= clSetKernelArg(kernel, 7, sizeof(cl_mem), &input[0][7]);
-	fprintf(stderr,"%i\n", err);
-	err |= clSetKernelArg(kernel, 8, sizeof(cl_mem), &input[0][8]);
 
-	fprintf(stderr,"%i\n", err);
-	err |= clSetKernelArg(kernel, 9, wgs*4*sizeof(float), NULL);
-	fprintf(stderr,"%i\n", err);
-	err |= clSetKernelArg(kernel, 10, numGroups*4*sizeof(float), NULL);
+	err |= clSetKernelArg(kernel, 8, localNum[0]*localNum[1]*4*sizeof(int), NULL);
+	err |= clSetKernelArg(kernel, 9, numGroups*4*sizeof(int), NULL);
 
-	fprintf(stderr,"%i\n", err);
+//	fprintf(stderr,"%i\n", err);
 	if(err != CL_SUCCESS) { perror("Error setting kernel0 arguments."); }
 		
-	err = clEnqueueNDRangeKernel(cle->getQueue(), kernel, 1, NULL, &globalNum, &localNum, 0, NULL, NULL);
-	fprintf(stderr,"%i\n",err);
+	err = clEnqueueNDRangeKernel(cle->getQueue(), kernel, 2, NULL, globalNum, localNum, 0, NULL, NULL);
+//	fprintf(stderr,"%i\n",err);
 	if(err != CL_SUCCESS) { perror("Error queuing kernel0 for execution."); exit(1); }
 
-	clEnqueueReleaseGLObjects(cle->getQueue(), 2, &input[0][7], 0, NULL, NULL);
+	err = clEnqueueReleaseGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
+//	fprintf(stderr,"%i\n", err);
+	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); }
+
 
 	clFinish(cle->getQueue());
 

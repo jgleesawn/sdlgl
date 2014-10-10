@@ -13,7 +13,7 @@ int main()
 	cle.Init();
 
 	Generator gen(600, 400, &cle);
-	gen.stepSim(5000);
+	gen.stepSim(1000);
 
 	Object background;
 	sf::Texture tex;

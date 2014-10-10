@@ -1,45 +1,60 @@
+//Much spent on conversion to floats, push conversion of float to division at the end.
 float sum( float3 sumee ) {
 	return sumee.x+sumee.y+sumee.z;
 }
 float avg( float v1, float v2) {
 	return (v1+v2)/2;
 }
+
+const sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE |
+CLK_ADDRESS_CLAMP |
+CLK_FILTER_NEAREST;
+
 //#pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
 __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 			__constant int * w, __constant int * h,
 			__constant int * spriteFrame, __global float * movMod,
-			__constant int * bgwidth,
-			__global int4 * bgTex, __global int4* sTex,
-			__local float4 * sum, __global float4 * gsum) { 
-	int gid = get_global_id(0);
-	if( gid > w[0]*h[0] )
-		return;
-	int lid = get_local_id(0);
-	sum[lid] = (float4)(0,0,0,0);
+			__read_only image2d_t bgTex, __read_only image2d_t sTex,
+//			__global int4 * bgTex, __global int4* sTex,
+			__local int4 * sum, __global int4 * gsum) { 
 
-	int curBgPix = (hpos[0] + gid/w[0])*bgwidth[0] + wpos[0] + gid%w[0];
-	int curSprPix = gid;
-	sum[lid] = convert_float4(abs_diff(bgTex[curBgPix],sTex[curSprPix]));
-	if( sTex[curSprPix] != 0 )
+	int lid = get_local_id(0)+get_local_id(1)*get_local_size(0);
+	sum[lid] = (int4)(0,0,0,0);
+
+	int x = get_global_id(0);
+	int y = get_global_id(1);	
+	int bgx = wpos[0]+x;
+	int bgy = hpos[0]+y;
+
+	uint4 stp = read_imageui(sTex, sampler, (int2)(spriteFrame[0]*w[0]+x,y) );
+	sum[lid] = convert_int4(abs_diff(read_imageui(bgTex,sampler,(int2)(bgx,bgy)), stp ) );
+	if( stp.w != 0 )
 		sum[lid].w = 1;
 
 	barrier(CLK_LOCAL_MEM_FENCE);
-	float4 sumd = (float4)(0.0f, 0.0f, 0.0f, 0.0f);
+	int4 sumd = (int4)(0, 0, 0, 0);
 	if( lid == 0 ) {
+		int numGroupsX = get_global_size(0)/get_local_size(0);
+		int numGroupsY = get_global_size(1)/get_local_size(1);
+		int groupIdX = get_global_id(0)/get_local_size(0);
+		int groupIdY = get_global_id(1)/get_local_size(1);
+
 		for( int i=0; i<get_local_size(0); i++)
 			sumd += sum[i];
-		gsum[gid/get_local_size(0)] = sumd;
+		gsum[groupIdX + groupIdY*numGroupsX] = sumd;
 	}
 	barrier(CLK_GLOBAL_MEM_FENCE);
-	if( gid ==0 ) {
-		sumd = (float4)(0.0f, 0.0f, 0.0f);
-		for( int i=0; i<get_global_size(0)/get_local_size(0); i++)
+	if( get_global_id(0)+get_global_id(1) ==0 ) {
+		int numGroupsX = get_global_size(0)/get_local_size(0);
+		int numGroupsY = get_global_size(1)/get_local_size(1);
+		sumd = (int4)(0, 0, 0, 0);
+		for( int i=0; i<numGroupsX*numGroupsY; i++)
 			sumd += gsum[i];
 		float diff = 0;
 		diff += sumd.x;
 		diff += sumd.y;
 		diff += sumd.z;
-		diff /= sumd.w*256*3;
+		diff /= (float)(sumd.w*256*3);
 		movMod[0] = diff;
 	}
 }
