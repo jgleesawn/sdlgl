@@ -94,16 +94,22 @@ void WorldEngine::Step(void * in) {
 	cl_kernel kernel = kernels[0];
 
 //Added input buffers because the commented kernel args would segfault on second loop.
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][0], CL_FALSE, 0, sizeof(int), &wpos, 0, NULL, NULL);
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][1], CL_FALSE, 0, sizeof(int), &hpos, 0, NULL, NULL);
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][2], CL_FALSE, 0, sizeof(int), &w, 0, NULL, NULL);
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][3], CL_FALSE, 0, sizeof(int), &h, 0, NULL, NULL);
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][4], CL_FALSE, 0, sizeof(int), &spriteFrame, 0, NULL, NULL);
-	clEnqueueWriteBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(float), &movMod, 0, NULL, NULL);
+	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][0], CL_FALSE, 0, sizeof(int), &wpos, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error writing int."); exit(1); }
+	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][1], CL_FALSE, 0, sizeof(int), &hpos, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error writing int."); exit(1); }
+	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][2], CL_FALSE, 0, sizeof(int), &w, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error writing int."); exit(1); }
+	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][3], CL_FALSE, 0, sizeof(int), &h, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error writing int."); exit(1); }
+	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][4], CL_FALSE, 0, sizeof(int), &spriteFrame, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error writing int."); exit(1); }
+	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(float), &movMod, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error writing float."); exit(1); }
 
 	err = clEnqueueAcquireGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
 //	fprintf(stderr,"%i\n", err);
-	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); }
+	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); exit(1); }
 	
 	err  = clSetKernelArg(kernel, 0, sizeof(cl_mem), &input[0][0]);
 	err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &input[0][1]);
@@ -118,7 +124,7 @@ void WorldEngine::Step(void * in) {
 	err |= clSetKernelArg(kernel, 9, numGroups*4*sizeof(int), NULL);
 
 //	fprintf(stderr,"%i\n", err);
-	if(err != CL_SUCCESS) { perror("Error setting kernel0 arguments."); }
+	if(err != CL_SUCCESS) { perror("Error setting kernel0 arguments."); exit(1); }
 		
 	err = clEnqueueNDRangeKernel(cle->getQueue(), kernel, 2, NULL, globalNum, localNum, 0, NULL, NULL);
 //	fprintf(stderr,"%i\n",err);
@@ -126,7 +132,7 @@ void WorldEngine::Step(void * in) {
 
 	err = clEnqueueReleaseGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
 //	fprintf(stderr,"%i\n", err);
-	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); }
+	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); exit(1); }
 
 
 	clFinish(cle->getQueue());

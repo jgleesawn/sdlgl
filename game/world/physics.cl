@@ -34,21 +34,14 @@ __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 	barrier(CLK_LOCAL_MEM_FENCE);
 	int4 sumd = (int4)(0, 0, 0, 0);
 	if( lid == 0 ) {
-		int numGroupsX = get_global_size(0)/get_local_size(0);
-		int numGroupsY = get_global_size(1)/get_local_size(1);
-		int groupIdX = get_global_id(0)/get_local_size(0);
-		int groupIdY = get_global_id(1)/get_local_size(1);
-
 		for( int i=0; i<get_local_size(0); i++)
 			sumd += sum[i];
-		gsum[groupIdX + groupIdY*numGroupsX] = sumd;
+		gsum[get_group_id(0)+get_group_id(1)*get_num_groups(0)] = sumd;
 	}
 	barrier(CLK_GLOBAL_MEM_FENCE);
 	if( get_global_id(0)+get_global_id(1) ==0 ) {
-		int numGroupsX = get_global_size(0)/get_local_size(0);
-		int numGroupsY = get_global_size(1)/get_local_size(1);
 		sumd = (int4)(0, 0, 0, 0);
-		for( int i=0; i<numGroupsX*numGroupsY; i++)
+		for( int i=0; i<get_num_groups(0)*get_num_groups(1); i++)
 			sumd += gsum[i];
 		float diff = 0;
 		diff += sumd.x;
