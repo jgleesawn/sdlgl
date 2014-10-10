@@ -14,11 +14,12 @@ LIBJPEGPath=-L./$(deppath)/jpeg-8/.libs
 
 SFMLLibs=-lsfml-graphics -lsfml-window -lsfml-system -ljpeg
 GLLibs=-lGL -lGLEW -lGLU
+SDL2Libs=-lSDL2 -lpthread -ldl
 
 IncPath=-I./ $(SFMLIncludePath) $(CLINCLUDE)
 LibPath=$(SFMLLibPath) $(GLEWLibPath) $(LIBJPEGPath)
 
-Libs=$(GLLibs) $(SFMLLibs) $(CLLIBS)
+Libs=$(GLLibs) $(SFMLLibs) $(CLLIBS) $(SDL2Libs)
 
 filedir=generator
 OBJDIR=build
@@ -62,3 +63,6 @@ clean:
 
 setup:
 	sudo ./run.sh
+
+sdl:
+	g++ sdl.cpp -o sdl-app $(IncPath) $(LibPath) $(Libs)

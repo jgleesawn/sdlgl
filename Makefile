@@ -9,3 +9,6 @@ clean:
 
 setup:
 	cd game; make setup
+
+sdl:
+	cd game; make sdl
