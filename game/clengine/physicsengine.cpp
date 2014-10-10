@@ -14,9 +14,12 @@ PhysicsEngine::PhysicsEngine(const char * physicsFile, CLEngine * cle_in) {
 }
 
 PhysicsEngine::~PhysicsEngine() {
+	fprintf(stderr, "Physics Destructor.\n");
 	cl_int err;
 	while( input.size() != 0 ) {
+		fprintf(stderr, "%i\n", input.size());
 		while(input.back().size() != 0) {
+			fprintf(stderr, "%i\n", input.back().size());
 			err = clReleaseMemObject(input.back().back());
 			if(err < 0) { fprintf(stderr, "%i\n",err); perror("Couldn't release MemObject."); }
 			input.back().pop_back();
@@ -25,7 +28,9 @@ PhysicsEngine::~PhysicsEngine() {
 	}
 		
 	while( !kernels.empty() ) {
+		fprintf(stderr, "%i\n", kernels.size());
 		err = clReleaseKernel(kernels.back());
+		fprintf(stderr,"%i\n",err);
 		if(err < 0) { fprintf(stderr, "%i\n",err); perror("Couldn't release kernel."); }
 		kernels.pop_back();
 	}

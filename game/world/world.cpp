@@ -54,7 +54,7 @@ int World::Size(){
 
 void World::Show( sf::RenderTarget * target ) {
 	sf::Sprite s(rt.getTexture());
-	target->draw(s);
+//	target->draw(s);
 	target->draw(*objs[0]->curAnimation());
 /*	This code draws from array. Using stop-gap just to test.
 	for( int i=0; i<objs.Size(); i++) {
