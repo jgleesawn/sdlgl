@@ -9,14 +9,22 @@
 #include <vector>
 
 #include "clengine/physicsengine.h"
+#include "object/animation.h"
+
+struct wePasser {
+	sf::RenderTexture * rt;
+	Animation * anim;
+	float movMod;
+};
 
 class WorldEngine : public PhysicsEngine {
-	int numPixels;
 public:
 	WorldEngine(CLEngine * cle_in=NULL);
 	~WorldEngine();
 
-	void Init(const & sf::Texture);
+	void Init(const sf::Texture &);
+
+	void addTexture(const sf::Texture &);
 
 	void Step(void *);
 };

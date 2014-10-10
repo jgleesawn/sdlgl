@@ -24,10 +24,12 @@ filedir=generator
 OBJDIR=build
 
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
+obj_objs=$(addprefix $(OBJDIR)/, object.o animation.o)
+wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
 cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
-objects=$(gen_objs) $(cle_objs) $(___objs)
+objects=$(obj_objs) $(wld_objs) $(gen_objs) $(cle_objs) $(___objs)
 
 
 CPPFLAGS=$(IncPath)
@@ -43,6 +45,10 @@ debug: executable
 executable: $(objects)
 	$(CC) $^ -o sfml-app $(LibPath) $(Libs)
 
+$(obj_objs): $(OBJDIR)/%.o: object/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
+$(wld_objs): $(OBJDIR)/%.o: world/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
 $(gen_objs): $(OBJDIR)/%.o: generator/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(cle_objs): $(OBJDIR)/%.o: clengine/%.cpp
