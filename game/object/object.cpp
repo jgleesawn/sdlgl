@@ -4,7 +4,10 @@ Object::Object() : curState(0) {}
 
 Object::Object(const char * sprFile, int numFrames) : curState(0) {
 	sf::Texture * tex = new sf::Texture;
-	tex->loadFromFile(sprFile);
+	if( !tex->loadFromFile(sprFile) ) {
+		printf("Couldn't load texture %s",sprFile);
+		exit(1);
+	}
 	sprites.push_back(new Animation(*tex, numFrames) );
 }
 
@@ -17,8 +20,8 @@ Animation * Object::curAnimation() {
 }
 
 void Object::Move(float x, float y) {
-	x *= movMod;
-	y *= movMod;
+//	x *= movMod;
+//	y *= movMod;
 	for( int i=0; i<sprites.size(); i++)
 		sprites[i]->move(x,y);
 }

@@ -27,9 +27,12 @@ void WorldEngine::Init(const sf::Texture & bgTex) {
 	GLint bgTex_id;
 	sf::Texture::bind(& bgTex);
 	glGetIntegerv( GL_TEXTURE_BINDING_2D, &bgTex_id );
+	glFinish();
+	printf("%i\n",bgTex_id);
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, bgTex_id, &err) );
+	printf("%i\n",err);
 	if( err < 0 ) { perror("Could not create texture buffer."); exit(1); }
 }
 
@@ -37,13 +40,18 @@ void WorldEngine::addTexture(const sf::Texture & newTex) {
 	GLint newTex_id;
 	sf::Texture::bind(& newTex);
 	glGetIntegerv( GL_TEXTURE_BINDING_2D, &newTex_id );
+	glFinish();
+	printf("%i\n",newTex_id);
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, newTex_id, &err) );
+	printf("%i\n",err);
 	if( err < 0 ) { perror("Could not create texture buffer."); exit(1); }
 }
 
 void WorldEngine::Step(void * in) {
+	glFinish();
+
 	int err;
 
 	wePasser * wp = (wePasser *) in;
@@ -82,6 +90,8 @@ void WorldEngine::Step(void * in) {
 	clEnqueueWriteBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(float), &movMod, 0, NULL, NULL);
 	clEnqueueWriteBuffer(cle->getQueue(), input[0][6], CL_FALSE, 0, sizeof(int), &bgWidth, 0, NULL, NULL);
 
+	clEnqueueAcquireGLObjects(cle->getQueue(), 2, &input[0][7], 0, NULL, NULL);
+
 	err  = clSetKernelArg(kernel, 0, sizeof(cl_mem), &input[0][0]);
 	err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &input[0][1]);
 	err |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &input[0][2]);
@@ -89,17 +99,24 @@ void WorldEngine::Step(void * in) {
 	err |= clSetKernelArg(kernel, 4, sizeof(cl_mem), &input[0][4]);
 	err |= clSetKernelArg(kernel, 5, sizeof(cl_mem), &input[0][5]);
 	err |= clSetKernelArg(kernel, 6, sizeof(cl_mem), &input[0][6]);
+	fprintf(stderr,"%i\n", err);
 	err |= clSetKernelArg(kernel, 7, sizeof(cl_mem), &input[0][7]);
+	fprintf(stderr,"%i\n", err);
 	err |= clSetKernelArg(kernel, 8, sizeof(cl_mem), &input[0][8]);
 
+	fprintf(stderr,"%i\n", err);
 	err |= clSetKernelArg(kernel, 9, wgs*4*sizeof(float), NULL);
+	fprintf(stderr,"%i\n", err);
 	err |= clSetKernelArg(kernel, 10, numGroups*4*sizeof(float), NULL);
 
+	fprintf(stderr,"%i\n", err);
 	if(err != CL_SUCCESS) { perror("Error setting kernel0 arguments."); }
 		
 	err = clEnqueueNDRangeKernel(cle->getQueue(), kernel, 1, NULL, &globalNum, &localNum, 0, NULL, NULL);
-//	fprintf(stderr,"%i\n",err);
+	fprintf(stderr,"%i\n",err);
 	if(err != CL_SUCCESS) { perror("Error queuing kernel0 for execution."); exit(1); }
+
+	clEnqueueReleaseGLObjects(cle->getQueue(), 2, &input[0][7], 0, NULL, NULL);
 
 	clFinish(cle->getQueue());
 

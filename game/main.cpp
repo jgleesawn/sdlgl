@@ -66,6 +66,7 @@ int main()
 		}
 
 		window.clear();
+		world.stepSim(1);
 		world.Show( &window );
 //		window.draw(background.sprite,sf::RenderStates(sf::BlendNone));	
 //		window.draw(shape,sf::RenderStates(sf::BlendNone));

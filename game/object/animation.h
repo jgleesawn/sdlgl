@@ -9,7 +9,7 @@ class Animation : public sf::Sprite {
 		int curFrame;
 		int wFrame,hFrame;
 	public:
-		Animation(sf::Texture tex, int frameNum=1);
+		Animation(sf::Texture & tex, int frameNum=1);
 		void Step();
 		void Reset() {curFrame = 0;}
 		int getFrame() {return curFrame;}

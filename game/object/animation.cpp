@@ -1,6 +1,6 @@
 #include "animation.h"
 
-Animation::Animation(sf::Texture tex, int frameNum) {
+Animation::Animation(sf::Texture & tex, int frameNum) {
 	numFrames = frameNum;
 	curFrame = 0;
 	wFrame = tex.getSize().x;
@@ -13,7 +13,7 @@ Animation::Animation(sf::Texture tex, int frameNum) {
 
 void Animation::Step() {
 	curFrame++;
-	if( curFrame > numFrames )
+	if( curFrame >= numFrames )
 		curFrame = 0;
 	sf::IntRect rect(curFrame*wFrame, 0, (curFrame+1)*wFrame, hFrame);
 	setTextureRect(rect);
