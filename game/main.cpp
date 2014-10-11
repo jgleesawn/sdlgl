@@ -1,85 +1,67 @@
-#include <SFML/Graphics.hpp>
-
-#include "generator/generator.h"
-#include "world/world.h"
-
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
+#include <string>
+#include <iostream>
 
-int main()
-{
+#include "util/cleanup.h"
 
-	CLEngine cle;
-	sf::RenderWindow window(sf::VideoMode(600, 400), "2D Game");
-	cle.Init();
+void logSDLError(std::ostream &os, const std::string &msg) {
+	os << msg << " error: " << SDL_GetError() << std::endl;
+}
 
-	Generator gen(600, 400, &cle);
-	gen.stepSim(1000);
-
-	Object background;
-	sf::Texture tex;
-	tex.create(600,400);
-	tex.update(gen.getBuffer());
-	background.addAnimation(new Animation(tex));
-
-	World world(600, 400, &cle);
-	Object Player("res/Char1.png", 4);
-	world.addObject( &Player );
-	world.addObject( &background );
-
-
-//	glEnable(GL_TEXTURE_2D);
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	sf::CircleShape shape(100.f);
-	shape.setFillColor(sf::Color(0,255,0,1));
-
-	sf::Clock clk;
-
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			switch (event.type) 
-			{
-			case sf::Event::Closed:
-				window.close();
-				break;
-			case sf::Event::KeyPressed:
-				switch (event.key.code) {
-				case sf::Keyboard::Up:
-					Player.Move(0,-1);
-					break;
-				case sf::Keyboard::Down:
-					Player.Move(0,1);
-					break;
-				case sf::Keyboard::Left:
-					Player.Move(-1,0);
-					break;
-				case sf::Keyboard::Right:
-					Player.Move(1,0);
-					break;
-				}
-				break;
-			}
-		}
-
-		window.clear();
-		world.stepSim(1);
-		world.Show( &window );
-//		window.draw(background.sprite,sf::RenderStates(sf::BlendNone));	
-//		window.draw(shape,sf::RenderStates(sf::BlendNone));
-//		window.draw(obj1.sprite,sf::RenderStates(sf::BlendAlpha));
-		window.display();
-
-
-		if( clk.getElapsedTime() > sf::milliseconds(200) ) {
-			Player.Step();
-
-			clk.restart();
-		}
+SDL_Texture* loadTexture(const std::string & file, SDL_Renderer *ren) {
+	SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
+	if( texture == nullptr ) {
+		logSDLError(std::cout, "LoadTexture");
 	}
+	return texture;
+}
+
+void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
+	SDL_Rect dst;
+	dst.x = x;
+	dst.y = y;
+	SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
+	SDL_RenderCopy(ren, tex, NULL, &dst);
+}
+
+int main( int argc, char* args[] ) {
+	SDL_Window* window = NULL;
+
+	SDL_Surface * screenSurface = NULL;
+
+	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) {
+		logSDLError(std::cout, "SDL_Init");
+		return 1;
+	}
+
+	window = SDL_CreateWindow( "Lesson 2", 100, 100, 640, 480, SDL_WINDOW_SHOWN );
+	if( window == nullptr ) {
+		logSDLError(std::cout, "CreateWindow");
+		SDL_Quit();
+		return 1;
+	}
+	SDL_Renderer *ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if( ren == nullptr ) {
+		logSDLError(std::cout, "CreateRenderer");
+		cleanup(window);
+		SDL_Quit();
+		return 1;
+	}
+	
+	SDL_Texture *img = loadTexture("res/Char1.png", ren);
+
+	SDL_RenderClear(ren);
+	renderTexture(img, ren, 20, 20);
+	SDL_RenderPresent(ren);
+
+
+	SDL_Delay( 2000 );
+
+	cleanup(ren,window);
+	SDL_Quit();
+
 	return 0;
 }
 

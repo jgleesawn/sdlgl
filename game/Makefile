@@ -3,25 +3,14 @@ deppath=../deps/
 CC=g++ -std=c++11
 CXX=g++ -std=c++11
 
-SFMLIncludePath=-I./$(deppath)/SFML-2.1/include
-SFMLLibPath=-L./$(deppath)/SFML-2.1/lib
-
-CLINCLUDE=-I./$(deppath)/openCL/
-CLLIBS=-lOpenCL
-
-GLEWLibPath=-L./$(deppath)/glew-1.7.0/lib
-LIBJPEGPath=-L./$(deppath)/jpeg-8/.libs
-SDL2LibPath=-L/usr/local/lib
-
-SFMLLibs=-lsfml-graphics -lsfml-window -lsfml-system -ljpeg
-GLLibs=-lGL -lGLEW -lGLU
-SDL2Libs=$(shell sdl2-config --libs)
+#SDL2Libs=$(shell sdl2-config --libs)
+SDL2Libs=-lSDL2
 SDL2Libs+= -lSDL2_image
 
-IncPath=-I./ $(SFMLIncludePath) $(CLINCLUDE)
-LibPath=$(SFMLLibPath) $(GLEWLibPath) $(LIBJPEGPath)
+LibPath=-L/usr/lib/ -L/usr/local/lib/
+IncPath=-L/usr/local/include/
 
-Libs=$(GLLibs) $(SFMLLibs) $(CLLIBS) $(SDL2Libs)
+Libs=$(SDL2Libs)
 
 filedir=generator
 OBJDIR=build
@@ -32,13 +21,8 @@ wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
 cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
-objects=$(obj_objs) $(wld_objs) $(gen_objs) $(cle_objs) $(___objs)
+objects=$(___objs)
 
-
-CPPFLAGS=$(IncPath)
-CPPFLAGS+= $(shell sdl2-config --cflags)
-CFLAGS=$(IncPath)
-CFLAGS+= $(shell sdl2-config --cflags)
 
 all:	executable
 
@@ -48,7 +32,7 @@ debug: CC += -g
 debug: executable
 
 executable: $(objects)
-	$(CC) $^ -o sfml-app $(LibPath) $(Libs)
+	$(CC) $^ -o sdl-app $(LibPath) $(Libs)
 
 $(obj_objs): $(OBJDIR)/%.o: object/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
@@ -62,11 +46,8 @@ $(___objs): $(OBJDIR)/%.o: %.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 
 clean:
-	rm -Rf *.o sfml-app
+	rm -Rf *.o sdl-app
 	rm -Rf build/*
 
 setup:
 	sudo ./run.sh
-
-sdl:
-	$(CC) -g sdl.cpp -o sdl-app $(IncPath) $(LibPath) $(Libs)
