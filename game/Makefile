@@ -1,7 +1,7 @@
 deppath=../deps/
 
-CC=g++
-CXX=g++
+CC=g++ -std=c++11
+CXX=g++ -std=c++11
 
 SFMLIncludePath=-I./$(deppath)/SFML-2.1/include
 SFMLLibPath=-L./$(deppath)/SFML-2.1/lib
@@ -11,10 +11,12 @@ CLLIBS=-lOpenCL
 
 GLEWLibPath=-L./$(deppath)/glew-1.7.0/lib
 LIBJPEGPath=-L./$(deppath)/jpeg-8/.libs
+SDL2LibPath=-L/usr/local/lib
 
 SFMLLibs=-lsfml-graphics -lsfml-window -lsfml-system -ljpeg
 GLLibs=-lGL -lGLEW -lGLU
-SDL2Libs=-lSDL2 -lpthread -ldl
+SDL2Libs=$(shell sdl2-config --libs)
+SDL2Libs+= -lSDL2_image
 
 IncPath=-I./ $(SFMLIncludePath) $(CLINCLUDE)
 LibPath=$(SFMLLibPath) $(GLEWLibPath) $(LIBJPEGPath)
@@ -34,7 +36,9 @@ objects=$(obj_objs) $(wld_objs) $(gen_objs) $(cle_objs) $(___objs)
 
 
 CPPFLAGS=$(IncPath)
+CPPFLAGS+= $(shell sdl2-config --cflags)
 CFLAGS=$(IncPath)
+CFLAGS+= $(shell sdl2-config --cflags)
 
 all:	executable
 
@@ -65,4 +69,4 @@ setup:
 	sudo ./run.sh
 
 sdl:
-	g++ sdl.cpp -o sdl-app $(IncPath) $(LibPath) $(Libs)
+	$(CC) -g sdl.cpp -o sdl-app $(IncPath) $(LibPath) $(Libs)
