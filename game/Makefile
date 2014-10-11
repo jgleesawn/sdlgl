@@ -16,12 +16,12 @@ filedir=generator
 OBJDIR=build
 
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
-obj_objs=$(addprefix $(OBJDIR)/, object.o animation.o)
+obj_objs=$(addprefix $(OBJDIR)/, sprite.o)
 wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
 cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
-objects=$(___objs)
+objects=$(___objs) $(obj_objs)
 
 
 all:	executable

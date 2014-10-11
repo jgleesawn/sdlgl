@@ -6,6 +6,8 @@
 
 #include "util/cleanup.h"
 
+#include "object/sprite.h"
+
 void logSDLError(std::ostream &os, const std::string &msg) {
 	os << msg << " error: " << SDL_GetError() << std::endl;
 }
@@ -49,15 +51,19 @@ int main( int argc, char* args[] ) {
 		SDL_Quit();
 		return 1;
 	}
-	
-	SDL_Texture *img = loadTexture("res/Char1.png", ren);
 
-	SDL_RenderClear(ren);
-	renderTexture(img, ren, 20, 20);
-	SDL_RenderPresent(ren);
+	Sprite spr( loadTexture("res/Char1.png", ren), 4 );
+
+	for( int i=0; i<20; i++ ) {
+		SDL_RenderClear(ren);
+		spr.DrawOn(ren, 20, 20);
+		spr.NextFrame();
+		SDL_RenderPresent(ren);
+
+		SDL_Delay( 200 );
+	}
 
 
-	SDL_Delay( 2000 );
 
 	cleanup(ren,window);
 	SDL_Quit();
