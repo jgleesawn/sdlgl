@@ -7,6 +7,7 @@
 #include "util/cleanup.h"
 
 #include "object/sprite.h"
+#include "clengine/clengine.h"
 
 void logSDLError(std::ostream &os, const std::string &msg) {
 	os << msg << " error: " << SDL_GetError() << std::endl;
@@ -30,8 +31,9 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
 
 int main( int argc, char* args[] ) {
 	SDL_Window* window = NULL;
-
 	SDL_Surface * screenSurface = NULL;
+
+	CLEngine * cle = new CLEngine();
 
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) {
 		logSDLError(std::cout, "SDL_Init");
@@ -64,6 +66,7 @@ int main( int argc, char* args[] ) {
 	}
 
 
+	delete cle;
 
 	cleanup(ren,window);
 	SDL_Quit();

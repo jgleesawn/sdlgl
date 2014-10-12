@@ -7,10 +7,14 @@ CXX=g++ -std=c++11
 SDL2Libs=-lSDL2
 SDL2Libs+= -lSDL2_image
 
-LibPath=-L/usr/lib/ -L/usr/local/lib/
-IncPath=-L/usr/local/include/
+CLLibs=-lOpenCL -lGLU
 
-Libs=$(SDL2Libs)
+CLInclude=-I../deps/openCL/
+
+LibPath=-L/usr/lib/ -L/usr/local/lib/
+IncPath=$(CLInclude) -I. -I/usr/local/include/
+
+Libs=$(SDL2Libs) $(CLLibs)
 
 filedir=generator
 OBJDIR=build
@@ -21,7 +25,7 @@ wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
 cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
-objects=$(___objs) $(obj_objs)
+objects=$(___objs) $(cle_objs) $(obj_objs)
 
 
 all:	executable
