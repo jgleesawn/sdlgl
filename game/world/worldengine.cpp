@@ -28,28 +28,26 @@ bool WorldEngine::Init(SDL_Texture * bgTex) {
 	if( accessProp != SDL_TEXTUREACCESS_TARGET )
 		return false;
 
-	GLint bgTex_id;
-	int err = SDL_GL_BindTexture(bgTex, NULL, NULL);
-	glGetIntegerv( GL_TEXTURE_BINDING_2D, &bgTex_id );
-	glFinish();
-	fprintf(stderr,"%i\n",err);
-	fprintf(stderr,"%i\n",bgTex_id);
+	GLint bgTex_id = getTexId(bgTex).tid;
 
-//	int err;
+	//Need to use clCreateFromGLTexture()
+	//Then enum in return from getTexId can be used.
+
+	int err;
 //	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, bgTex_id, &err) );
 //	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 	return true;
 }
 
 void WorldEngine::addTexture(SDL_Texture * newTex) {
-	GLint newTex_id;
-	int err = SDL_GL_BindTexture(newTex, NULL, NULL);
-	glGetIntegerv( GL_TEXTURE_BINDING_2D, &newTex_id );
-	glFinish();
-	fprintf(stderr,"%i\n",err);
-	fprintf(stderr,"%i\n",newTex_id);
+	GLint newTex_id = getTexId(newTex).tid;
+//	glFinish();
+//	fprintf(stderr,"%i\n",newTex_id);
 
-//	int err;
+	//Need to use clCreateFromGLTexture()
+	//Then enum in return from getTexId can be used.
+
+	int err;
 //	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, newTex_id, &err) );
 //	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 }

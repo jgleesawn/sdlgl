@@ -15,6 +15,7 @@
 //#pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
 
 #include "clengine/shader_util.h"
+#include "util/sdlutil.h"
 
 class CLEngine {
 protected:

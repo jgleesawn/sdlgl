@@ -49,6 +49,9 @@ int main( int argc, char* args[] ) {
 	world.addObject(&player);
 	world.addObject(&bgd);
 
+	printf("player tid: %i\n", getTexId(player.curSprite()->getTexture()).tid );
+	printf("%s\n", glGetString(GL_RENDERER));
+
 	for( int i=0; i<20; i++ ) {
 		world.stepSim(1);
 		SDL_RenderClear(ren);
