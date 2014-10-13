@@ -34,5 +34,5 @@ void Object::Step() {
 }
 
 void Object::DrawOn(SDL_Renderer * ren) {
-	curSprte()->DrawOn(ren, x, y);
+	curSprite()->DrawOn(ren, x, y);
 }

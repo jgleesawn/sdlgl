@@ -21,10 +21,11 @@ class Object {
 		void addSprite(Sprite *);
 		Sprite * curSprite();
 		void Move(float, float);
+		void SetPosition(float, float);
 		void Step();
 		void DrawOn(SDL_Renderer *);
-		void getX() { return x; }
-		void getY() { return y; }
+		float getX() { return x; }
+		float getY() { return y; }
 };
 
 

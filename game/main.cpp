@@ -7,7 +7,6 @@
 #include "util/cleanup.h"
 #include "util/sdlutil.h"
 
-#include "object/sprite.h"
 #include "clengine/clengine.h"
 #include "world/world.h"
 
@@ -46,7 +45,7 @@ int main( int argc, char* args[] ) {
 	World world(640, 480, ren, cle);
 
 	Object player( "res/Char1.png", 4, ren );
-	Object bgd( "res/Background.png", 4, ren );
+	Object bgd( "res/Background.png", 1, ren );
 	world.addObject(&player);
 	world.addObject(&bgd);
 
@@ -54,7 +53,7 @@ int main( int argc, char* args[] ) {
 		world.stepSim(1);
 		SDL_RenderClear(ren);
 		world.Show();
-		spr.NextFrame();
+		player.Step();
 		SDL_RenderPresent(ren);
 
 		SDL_Delay( 200 );

@@ -12,7 +12,7 @@
 
 struct wePasser {
 	SDL_Texture * rendtex;
-	Object * obj
+	Object * obj;
 	float movMod;
 };
 
@@ -21,9 +21,9 @@ public:
 	WorldEngine(CLEngine * cle_in=NULL);
 	~WorldEngine();
 
-	bool Init(SDL_Texture &);
+	bool Init(SDL_Texture *);
 
-	void addTexture(SDL_Texture &);
+	void addTexture(SDL_Texture *);
 
 	void Step(void *);
 };

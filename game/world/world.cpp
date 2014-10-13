@@ -21,22 +21,22 @@ void World::addObject( Object * obj ) {
 
 void World::stepSim(int numSteps) {
 	//Stop-gap
-	SDL_Texture * pTarget = renderer->target;
+	SDL_Texture * pTarget = SDL_GetRenderTarget(renderer);
 	SDL_SetRenderTarget(renderer, rendtex);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
-	obj[1]->DrawOn(renderer);
+	objs[1]->DrawOn(renderer);
 
 	SDL_RenderPresent(renderer);
 	glFinish();
 	SDL_SetRenderTarget(renderer,pTarget); 
 	
 	wePasser wp;
-	wp.rendtex = &rendtex;
-	wp.obj = objs[focus]->curAnimation();
+	wp.rendtex = rendtex;
+	wp.obj = objs[focus];
 	for( int i=0; i<numSteps; i++)
-		we.Step(&wp);
+//		we.Step(&wp);
 	objs[focus]->movMod = wp.movMod;
 }
 

@@ -23,7 +23,7 @@ void Sprite::DrawOn(SDL_Renderer * ren, int x, int y ) {
 	SDL_Rect outRect;
 	outRect.x = x;
 	outRect.y = y;
-	outRect.w = visRect.w*2;
-	outRect.h = visRect.h*2;
+	outRect.w = visRect.w;
+	outRect.h = visRect.h;
 	SDL_RenderCopy(ren, texture, &visRect, &outRect);
 }

@@ -20,12 +20,13 @@ filedir=generator
 OBJDIR=build
 
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
-obj_objs=$(addprefix $(OBJDIR)/, sprite.o)
+___objs=$(addprefix $(OBJDIR)/, main.o)
+utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o)
+cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
+obj_objs=$(addprefix $(OBJDIR)/, sprite.o object.o)
 wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
-cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
-___objs=$(addprefix $(OBJDIR)/, main.o)
-objects=$(___objs) $(cle_objs) $(obj_objs)
+objects=$(___objs) $(utl_objs) $(cle_objs) $(obj_objs) $(wld_objs) 
 
 
 all:	executable
@@ -38,16 +39,19 @@ debug: executable
 executable: $(objects)
 	$(CC) $^ -o sdl-app $(LibPath) $(Libs)
 
-$(obj_objs): $(OBJDIR)/%.o: object/%.cpp
+$(gen_objs): $(OBJDIR)/%.o: generator/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(wld_objs): $(OBJDIR)/%.o: world/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
-$(gen_objs): $(OBJDIR)/%.o: generator/%.cpp
+$(obj_objs): $(OBJDIR)/%.o: object/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(cle_objs): $(OBJDIR)/%.o: clengine/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
+$(utl_objs): $(OBJDIR)/%.o: util/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
 $(___objs): $(OBJDIR)/%.o: %.cpp
 	$(CC) -c $< -o $@ $(IncPath)
+
 
 clean:
 	rm -Rf *.o sdl-app
