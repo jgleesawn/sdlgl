@@ -12,8 +12,13 @@ class Sprite {
 	
 	public:
 		Sprite(SDL_Texture *, int);
+		~Sprite();
 		void NextFrame();
 		void DrawOn(SDL_Renderer *, int, int);
+		int getWFrame() { return visRect.w; }
+		int getHFrame() { return visRect.h; }
+		int getFrame() { return visRect.x/visRect.w; }
+		SDL_Texture * getTexture() { return texture; }
 };
 
 #endif

@@ -49,6 +49,7 @@ __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 		diff += sumd.y;
 		diff += sumd.z;
 		diff /= (float)(sumd.w*256*3);
+		diff *= 2;	//decreases slowdown
 		movMod[0] = diff;
 	}
 */

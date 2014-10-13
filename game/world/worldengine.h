@@ -1,19 +1,18 @@
 #ifndef WORLDENGINE_H
 #define WORLDENGINE_H
 
-#include <SFML/OpenGL.hpp>
-#include <SFML/Graphics.hpp>
+#include <SDL2/SDL.h>
 #include <CL/opencl.h>
 
 #include <string>
 #include <vector>
 
 #include "clengine/physicsengine.h"
-#include "object/animation.h"
+#include "object/object.h"
 
 struct wePasser {
-	sf::RenderTexture * rt;
-	Animation * anim;
+	SDL_Texture * rendtex;
+	Object * obj
 	float movMod;
 };
 
@@ -22,9 +21,9 @@ public:
 	WorldEngine(CLEngine * cle_in=NULL);
 	~WorldEngine();
 
-	void Init(const sf::Texture &);
+	bool Init(SDL_Texture &);
 
-	void addTexture(const sf::Texture &);
+	void addTexture(SDL_Texture &);
 
 	void Step(void *);
 };

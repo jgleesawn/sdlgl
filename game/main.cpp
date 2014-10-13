@@ -5,21 +5,11 @@
 #include <iostream>
 
 #include "util/cleanup.h"
+#include "util/sdlutil.h"
 
 #include "object/sprite.h"
 #include "clengine/clengine.h"
-
-void logSDLError(std::ostream &os, const std::string &msg) {
-	os << msg << " error: " << SDL_GetError() << std::endl;
-}
-
-SDL_Texture* loadTexture(const std::string & file, SDL_Renderer *ren) {
-	SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
-	if( texture == nullptr ) {
-		logSDLError(std::cout, "LoadTexture");
-	}
-	return texture;
-}
+#include "world/world.h"
 
 void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
 	SDL_Rect dst;
@@ -32,7 +22,6 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
 int main( int argc, char* args[] ) {
 	SDL_Window* window = NULL;
 	SDL_Surface * screenSurface = NULL;
-
 	CLEngine * cle = new CLEngine();
 
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) {
@@ -53,12 +42,18 @@ int main( int argc, char* args[] ) {
 		SDL_Quit();
 		return 1;
 	}
+	cle->Init();
+	World world(640, 480, ren, cle);
 
-	Sprite spr( loadTexture("res/Char1.png", ren), 4 );
+	Object player( "res/Char1.png", 4, ren );
+	Object bgd( "res/Background.png", 4, ren );
+	world.addObject(&player);
+	world.addObject(&bgd);
 
 	for( int i=0; i<20; i++ ) {
+		world.stepSim(1);
 		SDL_RenderClear(ren);
-		spr.DrawOn(ren, 20, 20);
+		world.Show();
 		spr.NextFrame();
 		SDL_RenderPresent(ren);
 

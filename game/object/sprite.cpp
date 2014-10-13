@@ -9,6 +9,10 @@ Sprite::Sprite(SDL_Texture * tex, int numFrames) {
 	visRect.h = th;	
 }
 
+Sprite::~Sprite() {
+	SDL_DestroyTexture(texture);
+}
+
 void Sprite::NextFrame() {
 	visRect.x += visRect.w;
 	if( visRect.x >= tw )

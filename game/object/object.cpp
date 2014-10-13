@@ -1,31 +1,38 @@
 #include "object.h"
 
-Object::Object() : curState(0) {}
-
-Object::Object(const char * sprFile, int numFrames) : curState(0) {
-	sf::Texture * tex = new sf::Texture;
-	if( !tex->loadFromFile(sprFile) ) {
-		printf("Couldn't load texture %s",sprFile);
-		exit(1);
-	}
-	sprites.push_back(new Animation(*tex, numFrames) );
+Object::Object() : curState(0) {
+	SetPosition(0,0);
 }
 
-void Object::addAnimation(Animation * anim) {
-	sprites.push_back(anim);
+Object::Object(std::string sprFile, int numFrames, SDL_Renderer * ren) : curState(0) {
+	SetPosition(0,0);
+	SDL_Texture * tex = loadTexture(sprFile, ren);
+	sprites.push_back(new Sprite(tex, numFrames) );
 }
 
-Animation * Object::curAnimation() {
+void Object::addSprite(Sprite * spr) {
+	sprites.push_back(spr);
+}
+
+Sprite * Object::curSprite() {
 	return sprites[curState];
 }
 
-void Object::Move(float x, float y) {
-//	x *= movMod;
-//	y *= movMod;
-	for( int i=0; i<sprites.size(); i++)
-		sprites[i]->move(x,y);
+void Object::Move(float x_mov, float y_mov) {
+	x_mov *= movMod;
+	y_mov *= movMod;
+	x += x_mov;
+	y += y_mov;
+}
+void Object::SetPosition(float x_pos, float y_pos) {
+	x = x_pos;
+	y = y_pos;
 }
 
 void Object::Step() {
-	curAnimation()->Step();
+	curSprite()->NextFrame();
+}
+
+void Object::DrawOn(SDL_Renderer * ren) {
+	curSprte()->DrawOn(ren, x, y);
 }

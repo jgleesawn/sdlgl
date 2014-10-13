@@ -2,11 +2,15 @@
 
 CLEngine::CLEngine(): isInit(false) {}
 CLEngine::~CLEngine() {
-	cl_int err;
-	err = clReleaseCommandQueue(queue);
-	if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release command queue."); }
-	err = clReleaseContext(context);
-	if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release context."); }
+	if( isInit ) {
+		cl_int err;
+		err = clFinish(queue);
+		if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't finish command queue."); }
+		err = clReleaseCommandQueue(queue);
+		if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release command queue."); }
+		err = clReleaseContext(context);
+		if(err < 0) { fprintf(stderr,"%i\n",err); perror("Couldn't release context."); }
+	}
 }
 void CLEngine::Init() {
 	int err;

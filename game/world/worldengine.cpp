@@ -20,30 +20,34 @@ WorldEngine::WorldEngine(CLEngine * cle_in) : PhysicsEngine("game/world/physics.
 
 WorldEngine::~WorldEngine() { }
 
-void WorldEngine::Init(const sf::Texture & bgTex) {
+bool WorldEngine::Init(SDL_Texture & bgTex) {
+	int accessProp;
+	SDL_QueryTexture(bgTex, NULL, &accessProp, NULL, NULL);
+	if( accessProp != SDL_TEXTUREACCESS_TARGET )
+		return false;
+
 	GLint bgTex_id;
-	sf::Texture::bind(& bgTex);
+	SDL_GL_BindTexture(&bgTex, NULL, NULL);
 	glGetIntegerv( GL_TEXTURE_BINDING_2D, &bgTex_id );
 	glFinish();
 //	fprintf(stderr,"%i\n",bgTex_id);
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, bgTex_id, &err) );
-//	fprintf(stderr,"%i\n",err);
-	if( err < 0 ) { perror("Could not create texture buffer."); exit(1); }
+	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
+	return true;
 }
 
-void WorldEngine::addTexture(const sf::Texture & newTex) {
+void WorldEngine::addTexture(SDL_Texture & newTex) {
 	GLint newTex_id;
-	sf::Texture::bind(& newTex);
+	SDL_GL_BindTexture(& newTex, NULL, NULL);
 	glGetIntegerv( GL_TEXTURE_BINDING_2D, &newTex_id );
 	glFinish();
 //	fprintf(stderr,"%i\n",newTex_id);
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, newTex_id, &err) );
-//	fprintf(stderr,"%i\n",err);
-	if( err < 0 ) { perror("Could not create texture buffer."); exit(1); }
+	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 }
 
 void WorldEngine::Step(void * in) {
@@ -52,16 +56,14 @@ void WorldEngine::Step(void * in) {
 	int err;
 
 	wePasser * wp = (wePasser *) in;
-	Animation * anim = wp->anim;
-	sf::RenderTexture * rt = wp->rt;
-	sf::Vector2i v2 = rt->mapCoordsToPixel(anim->getPosition());
-	int wpos = v2.x;
-	int hpos = v2.y;
-	int w = anim->getWFrame();
-	int h = anim->getHFrame();
-	int spriteFrame = anim->getFrame();
+	Sprite * spr = wp->obj->curSprite();
+	SDL_Texture * rendtex = wp->rendtex;
+	int wpos = wp->obj->getX();
+	int hpos = wp->obj->getY();
+	int w = spr->getWFrame();
+	int h = spr->getHFrame();
+	int spriteFrame = spr->getFrame();
 	float movMod = wp->movMod;
-	int bgWidth = rt->getSize().x;
 
 	int wgs = cle->getWorkGroupSize();
 

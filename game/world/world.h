@@ -8,18 +8,18 @@
 
 class World {
 		WorldEngine we;
-		sf::RenderTexture rt;
+		SDL_Renderer * renderer;
+		SDL_Texture * rendtex;
 		std::vector<Object *> objs;
 		int focus;
 		int width,height;
 	public:
-		World(int, int, CLEngine * cle_in=NULL);
+		World(int, int, SDL_Renderer *, CLEngine * cle_in=NULL);
 		~World();
 		void addObject(Object *);
-		unsigned char * getBuffer();
 		void stepSim(int);
 		int Size();
-		void Show(sf::RenderTarget *);
+		void Show();
 };
 
 #endif
