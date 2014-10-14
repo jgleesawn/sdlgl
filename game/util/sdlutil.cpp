@@ -12,37 +12,57 @@ SDL_Texture* loadTexture(const std::string & file, SDL_Renderer *ren) {
 	return texture;
 }
 
+
+//On "No bound texture found." Update texType, bindType, pid and increment listSize.
 //Associated Gets of glBindTexture
-texProp getTexId( SDL_Texture * tex ) {
-	GLenum types[8] = {
+TextureProperty getTexId( SDL_Texture * tex ) {
+#define listSize 9
+	GLenum texTypes[listSize] = {
+		GL_TEXTURE_1D,
+		GL_TEXTURE_2D,
+		GL_TEXTURE_3D,
+		GL_TEXTURE_RECTANGLE,
+		GL_TEXTURE_RECTANGLE_ARB,
+		GL_TEXTURE_1D_ARRAY,
+		GL_TEXTURE_2D_ARRAY,
+		GL_TEXTURE_2D_MULTISAMPLE,
+		GL_TEXTURE_2D_MULTISAMPLE_ARRAY };
+	GLenum bindTypes[listSize] = {
 		GL_TEXTURE_BINDING_1D,
 		GL_TEXTURE_BINDING_2D, 
 		GL_TEXTURE_BINDING_3D,
+		GL_TEXTURE_BINDING_RECTANGLE,
+		GL_TEXTURE_BINDING_RECTANGLE_ARB,
 		GL_TEXTURE_BINDING_1D_ARRAY,
 		GL_TEXTURE_BINDING_2D_ARRAY,
-		GL_TEXTURE_BINDING_RECTANGLE,
 		GL_TEXTURE_BINDING_2D_MULTISAMPLE,
 		GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY };
-	GLint ptid[8] = {0,0,0,0,0,0,0,0};
+	GLint ptid[listSize] = {0,0,0,0,0,0,0,0,0};
 	GLint tid = 0;
 
-	texProp rVal;
-	for( int i=0; i<8; i++ ) {
-		glGetIntegerv( types[i], &ptid[i] );
+	TextureProperty rVal;
+	for( int i=0; i<listSize; i++ ) {
+		glGetIntegerv( bindTypes[i], &ptid[i] );
+		glBindTexture( texTypes[i], 0 );
 	}
 	SDL_GL_BindTexture(tex, NULL, NULL);
-	for( int i=0; i<8; i++ ) {
-		glGetIntegerv( types[i], &tid );
-		if( tid != ptid[i] ) {
-			glBindTexture( types[i], ptid[i] );
+	for( int i=0; i<listSize; i++ ) {
+//		fprintf(stderr, "Type: %i\n", bindTypes[i]);
+		glGetIntegerv( bindTypes[i], &tid );
+		if( tid != 0 ) {
+			for( int j=i; j<listSize; j++ )
+				glBindTexture( texTypes[j], ptid[j] );
 			rVal.tid = tid;
-			rVal.ttype = types[i];
+			rVal.ttype = texTypes[i];
 			return rVal;	
 		}
+		glBindTexture( texTypes[i], ptid[i] );
 	}
+	std::cout << "No bound texture found." << std::endl;
 	rVal.tid = 0;
 	rVal.ttype = 0;
 	return rVal;
+#undef listSize
 }
 
 

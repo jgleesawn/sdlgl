@@ -12,11 +12,11 @@
 void logSDLError(std::ostream &os, const std::string &msg);
 SDL_Texture* loadTexture(const std::string & file, SDL_Renderer *ren);
 
-struct texProp {
+struct TextureProperty {
 	GLint tid;
 	GLenum ttype;
 };
 
-texProp getTexId( SDL_Texture * );
+TextureProperty getTexId( SDL_Texture * );
 
 #endif

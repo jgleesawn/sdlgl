@@ -23,33 +23,48 @@ WorldEngine::~WorldEngine() { }
 
 //Probably don't need the TEXTUREACCESS_TARGET for access in opencl.
 bool WorldEngine::Init(SDL_Texture * bgTex) {
-	int accessProp;
-	SDL_QueryTexture(bgTex, NULL, &accessProp, NULL, NULL);
-	if( accessProp != SDL_TEXTUREACCESS_TARGET )
+	Uint32 fmt;
+	int acc;
+	SDL_QueryTexture(bgTex, &fmt, &acc, NULL, NULL);
+//	fprintf(stderr, "fmt: %u\nacc: %i\n", fmt, acc);
+
+//Makes sure init texture can be used for rendering by SDL.
+	if( acc != SDL_TEXTUREACCESS_TARGET )
 		return false;
 
-	GLint bgTex_id = getTexId(bgTex).tid;
+	TextureProperty tp = getTexId(bgTex);
+//	GLint bgTex_id = getTexId(bgTex).tid;
 
+//	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
 	//Need to use clCreateFromGLTexture()
 	//Then enum in return from getTexId can be used.
 
 	int err;
+	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, tp.ttype, 0, tp.tid, &err) );
 //	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, bgTex_id, &err) );
-//	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
+	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 	return true;
 }
 
 void WorldEngine::addTexture(SDL_Texture * newTex) {
-	GLint newTex_id = getTexId(newTex).tid;
+//	Uint32 fmt;
+//	int acc;
+//	SDL_QueryTexture(newTex, &fmt, &acc, NULL, NULL);
+//	fprintf(stderr, "fmt: %u\nacc: %i\n", fmt, acc);
+
+	TextureProperty tp = getTexId(newTex);
+//	GLint newTex_id = getTexId(newTex).tid;
 //	glFinish();
 //	fprintf(stderr,"%i\n",newTex_id);
+//	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
 
 	//Need to use clCreateFromGLTexture()
 	//Then enum in return from getTexId can be used.
 
 	int err;
+	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, tp.ttype, 0, tp.tid, &err) );
 //	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, newTex_id, &err) );
-//	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
+	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 }
 
 void WorldEngine::Step(void * in) {
