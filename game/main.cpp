@@ -52,12 +52,43 @@ int main( int argc, char* args[] ) {
 	printf("player tid: %i\n", getTexId(player.curSprite()->getTexture()).tid );
 	printf("%s\n", glGetString(GL_RENDERER));
 
-	for( int i=0; i<20; i++ ) {
+	bool quit = false;
+	SDL_Event event;
+
+	while( !quit ) {
+
+		while( SDL_PollEvent( &event ) != 0 ) {
+			switch( event.type ) {
+			case SDL_QUIT:
+				quit = true;
+				break;
+			case SDL_KEYDOWN:
+				switch( event.key.keysym.sym ) {
+				case SDLK_UP:
+					fprintf(stderr, "keydown.\n");
+					player.Move(0,-1);
+					break;
+				case SDLK_DOWN:
+					player.Move(0,1);
+					break;
+				case SDLK_LEFT:
+					player.Move(-1,0);
+					break;
+				case SDLK_RIGHT:
+					player.Move(1,0);
+					break;
+				}
+				break;
+			}
+		}
+
 		world.stepSim(1);
 		SDL_RenderClear(ren);
 		world.Show();
 		player.Step();
 		SDL_RenderPresent(ren);
+
+//		player.Move(1,1);
 
 		SDL_Delay( 200 );
 	}

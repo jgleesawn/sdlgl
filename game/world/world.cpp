@@ -36,8 +36,9 @@ void World::stepSim(int numSteps) {
 	wp.rendtex = rendtex;
 	wp.obj = objs[focus];
 	for( int i=0; i<numSteps; i++)
-//		we.Step(&wp);
+		we.Step(&wp);
 	objs[focus]->movMod = wp.movMod;
+	fprintf(stderr, "movMod: %f\n", wp.movMod);
 }
 
 int World::Size(){
@@ -49,7 +50,7 @@ void World::Show() {
 	objs[0]->DrawOn(renderer);
 /*	This code draws from array. Using stop-gap just to test.
 	for( int i=0; i<objs.Size(); i++) {
-		target->draw( *objs[i].curAnimation() );
+		objs[i].DrawOn(renderer);
 	}
 */
 }

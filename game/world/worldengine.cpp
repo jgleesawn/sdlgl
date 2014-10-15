@@ -4,17 +4,17 @@ WorldEngine::WorldEngine(CLEngine * cle_in) : PhysicsEngine("game/world/physics.
 	int err;
 	LoadKernel("MovementCompute");
 
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
+	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(cl_int), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
+	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(cl_int), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
+	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(cl_int), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
+	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(cl_int), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(int), NULL, &err ));
+	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_ONLY, sizeof(cl_int), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
-	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_WRITE, sizeof(float), NULL, &err ));
+	input.back().push_back( clCreateBuffer(cle->getContext(), CL_MEM_READ_WRITE, sizeof(cl_float), NULL, &err ));
 	if( err < 0 ) { perror("Could not create int buffer."); exit(1); }
 }
 
@@ -112,6 +112,9 @@ void WorldEngine::Step(void * in) {
 //	if(input[0][2] == 0) { return; }
 	cl_kernel kernel = kernels[0];
 
+	cl_mem commBuf = clCreateBuffer( cle->getContext(), CL_MEM_READ_WRITE, 4*sizeof(cl_float)*numGroups, NULL, &err);
+	if(err != CL_SUCCESS) { perror("Error creating commBuf."); fprintf(stderr, "%i\n", err); exit(1); }
+
 //Added input buffers because the commented kernel args would segfault on second loop.
 	err = clEnqueueWriteBuffer(cle->getQueue(), input[0][0], CL_FALSE, 0, sizeof(int), &wpos, 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error writing int."); exit(1); }
@@ -140,22 +143,23 @@ void WorldEngine::Step(void * in) {
 	err |= clSetKernelArg(kernel, 6, sizeof(cl_mem), &input[0][6]);
 	err |= clSetKernelArg(kernel, 7, sizeof(cl_mem), &input[0][7]);
 
-	err |= clSetKernelArg(kernel, 8, localNum[0]*localNum[1]*4*sizeof(int), NULL);
-	err |= clSetKernelArg(kernel, 9, numGroups*4*sizeof(int), NULL);
+	err |= clSetKernelArg(kernel, 8, localNum[0]*localNum[1]*4*sizeof(cl_float), NULL);
+	err |= clSetKernelArg(kernel, 9, sizeof(cl_mem), &commBuf);
 
-//	fprintf(stderr,"%i\n", err);
-	if(err != CL_SUCCESS) { perror("Error setting kernel0 arguments."); exit(1); }
+	if(err != CL_SUCCESS) { perror("Error setting kernel0 arguments."); fprintf(stderr, "%i\n", err); exit(1); }
 		
 	err = clEnqueueNDRangeKernel(cle->getQueue(), kernel, 2, NULL, globalNum, localNum, 0, NULL, NULL);
-//	fprintf(stderr,"%i\n",err);
-	if(err != CL_SUCCESS) { perror("Error queuing kernel0 for execution."); exit(1); }
+	if(err != CL_SUCCESS) { perror("Error queuing kernel0 for execution."); fprintf(stderr, "%i\n", err); exit(1); }
+
+	err = clEnqueueReadBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(cl_float), &movMod, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error reading CL's movMod."); fprintf(stderr, "%i\n", err); exit(1); }
 
 	err = clEnqueueReleaseGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
-//	fprintf(stderr,"%i\n", err);
-	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); exit(1); }
+	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); fprintf(stderr, "%i\n", err); exit(1); }
 
 
 	clFinish(cle->getQueue());
+	clReleaseMemObject(commBuf);
 
 	wp->movMod = movMod;
 }
