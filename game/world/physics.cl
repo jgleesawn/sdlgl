@@ -31,10 +31,10 @@ __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 	sum[lid] = fabs( stp - read_imagef(bgTex,sampler,(int2)(bgx,bgy)) );
 //	sum[lid] = abs_diff( stp, read_imagef(bgTex,sampler,(int2)(bgx,bgy)) );
 
-	if( stp.w != 0 )
+	if( stp.w > 0.0 )
 		sum[lid].w = 1;
-//	else
-//		sum[lid] = (float4)(0.0,0.0,0.0,0.0);
+	else
+		sum[lid] = (float4)(0.0,0.0,0.0,0.0);
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 	float4 sumd = (float4)(0.0, 0.0, 0.0, 0.0);
@@ -55,7 +55,7 @@ __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 		diff += sumd.y;
 		diff += sumd.z;
 		diff /= (float)(sumd.w*3);
-//		diff *= 2;	//decreases slowdown
+		diff *= 4;	//decreases slowdown
 
 		movMod[0] = diff;
 	}

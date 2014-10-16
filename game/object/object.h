@@ -5,18 +5,21 @@
 #include <vector>
 #include <string>
 
+#include "clengine/clengine.h"
 #include "util/sdlutil.h"
 #include "sprite.h"
+
+#include "util/othertypes.h"
 
 class Object {
 		std::vector<Sprite *> sprites;
 		int curState;
-		float x, y;
+		vec4<float> pos;
 	public:
 		float movMod;	//Stop Gap
 
 		Object();
-		Object(std::string, int, SDL_Renderer *);
+		Object(std::string, int, SDL_Renderer *, CLEngine * cle = NULL);
 
 		void addSprite(Sprite *);
 		Sprite * curSprite();
@@ -24,8 +27,8 @@ class Object {
 		void SetPosition(float, float);
 		void Step();
 		void DrawOn(SDL_Renderer *);
-		float getX() { return x; }
-		float getY() { return y; }
+		float getX() { return pos.data[0]; }
+		float getY() { return pos.data[1]; }
 };
 
 

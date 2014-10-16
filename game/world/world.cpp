@@ -3,6 +3,7 @@
 World::World(int w, int h, SDL_Renderer * ren, CLEngine * cle_in) : we(cle_in), focus(0) {
 	renderer = ren;
 	rendtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
+//Possibly remove Init and just use addTexture
 	we.Init(rendtex);
 
 	width = w;
@@ -16,7 +17,7 @@ World::~World () {
 void World::addObject( Object * obj ) {
 	objs.push_back(obj);
 //Only Adds Current Texture, expand to all animation textures.
-	we.addTexture(obj->curSprite()->getTexture());
+//	we.addTexture(obj->curSprite()->getTexture());
 }
 
 void World::stepSim(int numSteps) {

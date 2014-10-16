@@ -33,7 +33,6 @@ bool WorldEngine::Init(SDL_Texture * bgTex) {
 		return false;
 
 	TextureProperty tp = getTexId(bgTex);
-//	GLint bgTex_id = getTexId(bgTex).tid;
 
 //	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
 	//Need to use clCreateFromGLTexture()
@@ -41,29 +40,16 @@ bool WorldEngine::Init(SDL_Texture * bgTex) {
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, tp.ttype, 0, tp.tid, &err) );
-//	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, bgTex_id, &err) );
 	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 	return true;
 }
 
 void WorldEngine::addTexture(SDL_Texture * newTex) {
-//	Uint32 fmt;
-//	int acc;
-//	SDL_QueryTexture(newTex, &fmt, &acc, NULL, NULL);
-//	fprintf(stderr, "fmt: %u\nacc: %i\n", fmt, acc);
-
 	TextureProperty tp = getTexId(newTex);
-//	GLint newTex_id = getTexId(newTex).tid;
-//	glFinish();
-//	fprintf(stderr,"%i\n",newTex_id);
 //	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
-
-	//Need to use clCreateFromGLTexture()
-	//Then enum in return from getTexId can be used.
 
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, tp.ttype, 0, tp.tid, &err) );
-//	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, newTex_id, &err) );
 	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
 }
 
@@ -82,6 +68,8 @@ void WorldEngine::Step(void * in) {
 	int spriteFrame = spr->getFrame();
 	float movMod = wp->movMod;
 
+	cl_mem sprCL = spr->getCL();
+
 	int wgs = cle->getWorkGroupSize();
 
 	size_t globalNum[2];
@@ -99,17 +87,8 @@ void WorldEngine::Step(void * in) {
 	else
 		globalNum[1] += globalNum[1] % 8;
 
-//	int numPixels = w*h;
-//	int diff = wgs - numPixels % wgs;
-//	const size_t osize = numPixels+diff;
-//	const size_t globalNum = osize;
-//	size_t localNum = wgs;
-//	if( osize < wgs )
-//		localNum = osize;
 	const size_t numGroups = (globalNum[0]/localNum[0])*(globalNum[1]/localNum[1]);
 
-	//Returns if pointer is null
-//	if(input[0][2] == 0) { return; }
 	cl_kernel kernel = kernels[0];
 
 	cl_mem commBuf = clCreateBuffer( cle->getContext(), CL_MEM_READ_WRITE, 4*sizeof(cl_float)*numGroups, NULL, &err);
@@ -130,9 +109,13 @@ void WorldEngine::Step(void * in) {
 	if(err != CL_SUCCESS) { perror("Error writing float."); exit(1); }
 
 //	fprintf(stderr, "%i objects in input\n", input[0].size());
-	err = clEnqueueAcquireGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
-//	fprintf(stderr,"%i\n", err);
+fprintf(stderr,"rendtex");
+	err = clEnqueueAcquireGLObjects(cle->getQueue(), 1, &input[0][6], 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); exit(1); }
+fprintf(stderr,"obj[focus]: %i\n", sprCL);
+	err = clEnqueueAcquireGLObjects(cle->getQueue(), 1, &sprCL, 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); exit(1); }
+
 	
 	err  = clSetKernelArg(kernel, 0, sizeof(cl_mem), &input[0][0]);
 	err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &input[0][1]);
@@ -141,7 +124,7 @@ void WorldEngine::Step(void * in) {
 	err |= clSetKernelArg(kernel, 4, sizeof(cl_mem), &input[0][4]);
 	err |= clSetKernelArg(kernel, 5, sizeof(cl_mem), &input[0][5]);
 	err |= clSetKernelArg(kernel, 6, sizeof(cl_mem), &input[0][6]);
-	err |= clSetKernelArg(kernel, 7, sizeof(cl_mem), &input[0][7]);
+	err |= clSetKernelArg(kernel, 7, sizeof(cl_mem), &sprCL);
 
 	err |= clSetKernelArg(kernel, 8, localNum[0]*localNum[1]*4*sizeof(cl_float), NULL);
 	err |= clSetKernelArg(kernel, 9, sizeof(cl_mem), &commBuf);
@@ -154,7 +137,9 @@ void WorldEngine::Step(void * in) {
 	err = clEnqueueReadBuffer(cle->getQueue(), input[0][5], CL_FALSE, 0, sizeof(cl_float), &movMod, 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error reading CL's movMod."); fprintf(stderr, "%i\n", err); exit(1); }
 
-	err = clEnqueueReleaseGLObjects(cle->getQueue(), 2, &input[0][6], 0, NULL, NULL);
+	err = clEnqueueReleaseGLObjects(cle->getQueue(), 1, &input[0][6], 0, NULL, NULL);
+	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); fprintf(stderr, "%i\n", err); exit(1); }
+	err = clEnqueueReleaseGLObjects(cle->getQueue(), 1, &sprCL, 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error releasing GL Objects."); fprintf(stderr, "%i\n", err); exit(1); }
 
 

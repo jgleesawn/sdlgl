@@ -44,8 +44,8 @@ int main( int argc, char* args[] ) {
 	cle->Init();
 	World world(640, 480, ren, cle);
 
-	Object player( "res/Char1.png", 4, ren );
-	Object bgd( "res/Background.png", 1, ren );
+	Object player( "res/Char1.png", 4, ren, cle );
+	Object bgd( "res/Background.png", 1, ren, cle );
 	world.addObject(&player);
 	world.addObject(&bgd);
 
@@ -90,7 +90,7 @@ int main( int argc, char* args[] ) {
 
 //		player.Move(1,1);
 
-		SDL_Delay( 200 );
+		SDL_Delay( 100 );
 	}
 
 
