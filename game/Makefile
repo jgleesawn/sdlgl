@@ -26,7 +26,8 @@ cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
 obj_objs=$(addprefix $(OBJDIR)/, sprite.o object.o)
 wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
-objects=$(___objs) $(utl_objs) $(cle_objs) $(obj_objs) $(wld_objs) 
+txm_objs=$(addprefix $(OBJDIR)/, texturemanager.o packedtextures.o)
+objects=$(___objs) $(utl_objs) $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
 
 
 all:	executable
@@ -39,6 +40,8 @@ debug: executable
 executable: $(objects)
 	$(CC) $^ -o sdl-app $(LibPath) $(Libs)
 
+$(txm_objs): $(OBJDIR)/%.o: texturemanager/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
 $(gen_objs): $(OBJDIR)/%.o: generator/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(wld_objs): $(OBJDIR)/%.o: world/%.cpp
