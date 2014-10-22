@@ -14,14 +14,14 @@ CLInclude=-I../deps/openCL/
 LibPath=-L/usr/lib/ -L/usr/local/lib/
 IncPath=$(CLInclude) -I. -I/usr/local/include/
 
-Libs=$(SDL2Libs) $(CLLibs)
+Libs=$(SDL2Libs) $(CLLibs) -lcurl
 
 filedir=generator
 OBJDIR=build
 
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
-utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o)
+utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o curlutil.o)
 cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
 obj_objs=$(addprefix $(OBJDIR)/, sprite.o object.o)
 wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)

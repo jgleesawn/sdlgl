@@ -6,6 +6,7 @@
 
 #include "util/cleanup.h"
 #include "util/sdlutil.h"
+#include "util/curlutil.h"
 
 #include "clengine/clengine.h"
 #include "world/world.h"
@@ -22,6 +23,8 @@ int main( int argc, char* args[] ) {
 	SDL_Window* window = NULL;
 	SDL_Surface * screenSurface = NULL;
 	CLEngine * cle = new CLEngine();
+
+	CurlUtil cu;
 
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) {
 		logSDLError(std::cout, "SDL_Init");
@@ -45,7 +48,8 @@ int main( int argc, char* args[] ) {
 	World world(640, 480, ren, cle);
 
 	Object player( "res/Char1.png", 4, ren, cle );
-	Object bgd( "res/Background.png", 1, ren, cle );
+	Object bgd( cu.getMap(42.2814, -83.7483), 1, ren, cle);
+//	Object bgd( "res/Background.png", 1, ren, cle );
 	world.addObject(&player);
 	world.addObject(&bgd);
 
