@@ -19,4 +19,6 @@ struct TextureProperty {
 
 TextureProperty getTexId( SDL_Texture * );
 
+SDL_Rect getSubRect(SDL_Rect, SDL_Rect);
+
 #endif

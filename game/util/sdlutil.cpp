@@ -65,4 +65,10 @@ TextureProperty getTexId( SDL_Texture * tex ) {
 #undef listSize
 }
 
-
+SDL_Rect getSubRect(SDL_Rect base, SDL_Rect offset) {
+	base.x += offset.x;
+	base.y += offset.y;
+	base.w = offset.w;
+	base.h = offset.h;
+	return base;
+}

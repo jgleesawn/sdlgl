@@ -8,6 +8,7 @@
 #include "util/sdlutil.h"
 #include "util/curlutil.h"
 
+#include "texturemanager/texturemanager.h"
 #include "clengine/clengine.h"
 #include "world/world.h"
 
@@ -99,6 +100,7 @@ int main( int argc, char* args[] ) {
 
 
 	delete cle;
+	delete TextureManager().getSingleton();
 
 	cleanup(ren,window);
 	SDL_Quit();

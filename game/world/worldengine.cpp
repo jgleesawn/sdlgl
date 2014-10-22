@@ -23,6 +23,8 @@ WorldEngine::~WorldEngine() { }
 
 //Probably don't need the TEXTUREACCESS_TARGET for access in opencl.
 bool WorldEngine::Init(SDL_Texture * bgTex) {
+//	TextureLocation tl;
+//	tl = TextureManager().getSingleton()->getTexture(al);
 	Uint32 fmt;
 	int acc;
 	SDL_QueryTexture(bgTex, &fmt, &acc, NULL, NULL);

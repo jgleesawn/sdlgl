@@ -6,7 +6,8 @@
 #include <string>
 
 #include "clengine/clengine.h"
-#include "util/sdlutil.h"
+#include "texturemanager/texturemanager.h"
+//#include "util/sdlutil.h"
 #include "sprite.h"
 
 #include "util/othertypes.h"

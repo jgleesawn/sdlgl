@@ -8,8 +8,8 @@ Object::Object() : curState(0) {
 Object::Object(std::string sprFile, int numFrames, SDL_Renderer * ren, CLEngine * cle) : curState(0) {
 	movMod=1;
 	SetPosition(0,0);
-	SDL_Texture * tex = loadTexture(sprFile, ren);
-	sprites.push_back(new Sprite(tex, numFrames, cle) );
+	AtlasLocation al = TextureManager().getSingleton()->addTexture(sprFile, ren);
+	sprites.push_back(new Sprite(al, numFrames, cle) );
 }
 
 void Object::addSprite(Sprite * spr) {

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "clengine/physicsengine.h"
+//#include "texturemanager/texturemanager.h"
 #include "object/object.h"
 
 struct wePasser {

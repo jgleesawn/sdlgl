@@ -1,15 +1,19 @@
 #include "sprite.h"
 
-Sprite::Sprite(SDL_Texture * tex, int numFrames, CLEngine * cle): clLoaded(0) {
-	texture = tex;
-	SDL_QueryTexture(texture, NULL, NULL, &tw, &th);
+Sprite::Sprite(AtlasLocation al, int numFrames, CLEngine * cle): clLoaded(0) {
+	location = al;
+	TextureLocation tl = TextureManager().getSingleton()->getTexture(location);
+
+	tw = tl.lrect.w;
+	th = tl.lrect.h;
+
 	visRect.x = 0;
 	visRect.y = 0;
 	visRect.w = tw/numFrames;
 	visRect.h = th;	
 
 	if( cle != NULL ) {
-		TextureProperty tp = getTexId(texture);
+		TextureProperty tp = getTexId(tl.texture);
 		int err;
 		clObj = clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, tp.ttype, 0, tp.tid, &clLoaded);
 		if( clLoaded < 0 ) { fprintf(stderr, "%i\n", clLoaded); perror("Could not create texture buffer."); exit(1); }
@@ -21,7 +25,6 @@ Sprite::Sprite(SDL_Texture * tex, int numFrames, CLEngine * cle): clLoaded(0) {
 Sprite::~Sprite() {
 	if( !clLoaded )
 		clReleaseMemObject(clObj);
-	SDL_DestroyTexture(texture);
 }
 
 void Sprite::NextFrame() {
@@ -31,10 +34,12 @@ void Sprite::NextFrame() {
 }
 
 void Sprite::DrawOn(SDL_Renderer * ren, int x, int y ) {
+	TextureLocation tl = TextureManager().getSingleton()->getTexture(location);
 	SDL_Rect outRect;
 	outRect.x = x;
 	outRect.y = y;
 	outRect.w = visRect.w;
 	outRect.h = visRect.h;
-	SDL_RenderCopy(ren, texture, &visRect, &outRect);
+	SDL_Rect sRect = getSubRect(tl.lrect, visRect);
+	SDL_RenderCopy(ren, tl.texture, &sRect, &outRect);
 }
