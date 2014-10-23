@@ -22,8 +22,9 @@ struct AtlasLocation {
 class TextureManager {
 
 	static class TextureManager * mSingleton;
+	static SDL_Renderer * renderer;
 
-	std::vector<PackedTextures> textures;
+	std::vector<PackedTextures *> textures;
 	std::vector<SDL_Texture *> unpacked;
 	std::vector<SDL_Rect> rects;
 	std::vector<bool> owns;
@@ -39,6 +40,7 @@ public:
 	AtlasLocation addTexture(SDL_Texture *, bool giveOwnership = false);
 	AtlasLocation addTexture(SDL_Texture *, SDL_Rect, bool giveOwnership = false);
 	void packTextures(SDL_Renderer *);
+	int getSize() { return textures.size(); }
 };
 
 

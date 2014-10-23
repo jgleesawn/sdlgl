@@ -14,12 +14,14 @@ World::~World () {
 	SDL_DestroyTexture(rendtex);
 }
 
+//Currently requires textures to be packed.
 void World::addObject( Object * obj ) {
 	objs.push_back(obj);
 //Only Adds Current Texture, expand to all animation textures.
-//	we.addTexture(obj->curSprite()->getTexture());
+	we.addTexture(obj->curSprite()->getTexture());
 }
 
+//Object order currently hard-coded into the stepSim
 void World::stepSim(int numSteps) {
 	//Stop-gap
 	SDL_Texture * pTarget = SDL_GetRenderTarget(renderer);
@@ -27,7 +29,7 @@ void World::stepSim(int numSteps) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
-	objs[1]->DrawOn(renderer);
+	objs[0]->DrawOn(renderer);
 
 	SDL_RenderPresent(renderer);
 	glFinish();
@@ -47,11 +49,10 @@ int World::Size(){
 }
 
 void World::Show() {
-	SDL_RenderCopy(renderer, rendtex, NULL, NULL);
-	objs[0]->DrawOn(renderer);
-/*	This code draws from array. Using stop-gap just to test.
-	for( int i=0; i<objs.Size(); i++) {
-		objs[i].DrawOn(renderer);
+//	SDL_RenderCopy(renderer, rendtex, NULL, NULL);
+//	objs[0]->DrawOn(renderer);
+//	This code draws from array. Using stop-gap just to test.
+	for( int i=0; i<objs.size(); i++) {
+		objs[i]->DrawOn(renderer);
 	}
-*/
 }

@@ -27,6 +27,8 @@ class Sprite {
 		int getFrame() { return visRect.x/visRect.w; }
 		SDL_Texture * getTexture() { return TextureManager().getSingleton()->getTexture(location).texture; }
 		cl_mem getCL() { return clObj; }
+		AtlasLocation getAtlasLocation() { return location; }
+		TextureLocation getTextureLocation() { return TextureManager().getSingleton()->getTexture(location); }
 };
 
 #endif

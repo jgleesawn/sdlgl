@@ -10,3 +10,5 @@ clean:
 setup:
 	cd game; make setup
 
+test:
+	cd game; make test

@@ -36,7 +36,7 @@ bool WorldEngine::Init(SDL_Texture * bgTex) {
 
 	TextureProperty tp = getTexId(bgTex);
 
-//	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
+	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
 	//Need to use clCreateFromGLTexture()
 	//Then enum in return from getTexId can be used.
 
@@ -48,11 +48,13 @@ bool WorldEngine::Init(SDL_Texture * bgTex) {
 
 void WorldEngine::addTexture(SDL_Texture * newTex) {
 	TextureProperty tp = getTexId(newTex);
-//	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
+	fprintf(stderr, "tid: %i\nttype: %i\n", tp.tid, tp.ttype );
 
+	printf("addTex\n");
 	int err;
 	input.back().push_back( clCreateFromGLTexture2D(cle->getContext(), CL_MEM_READ_WRITE, tp.ttype, 0, tp.tid, &err) );
 	if( err < 0 ) { fprintf(stderr, "%i\n", err); perror("Could not create texture buffer."); exit(1); }
+	printf("addTex\n");
 }
 
 void WorldEngine::Step(void * in) {
@@ -111,10 +113,10 @@ void WorldEngine::Step(void * in) {
 	if(err != CL_SUCCESS) { perror("Error writing float."); exit(1); }
 
 //	fprintf(stderr, "%i objects in input\n", input[0].size());
-fprintf(stderr,"rendtex");
+//fprintf(stderr,"rendtex");
 	err = clEnqueueAcquireGLObjects(cle->getQueue(), 1, &input[0][6], 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); exit(1); }
-fprintf(stderr,"obj[focus]: %i\n", sprCL);
+//fprintf(stderr,"obj[focus]: %i\n", sprCL);
 	err = clEnqueueAcquireGLObjects(cle->getQueue(), 1, &sprCL, 0, NULL, NULL);
 	if(err != CL_SUCCESS) { perror("Error acquiring GL Objects."); exit(1); }
 

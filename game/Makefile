@@ -20,6 +20,7 @@ filedir=generator
 OBJDIR=build
 
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
+___test=$(addprefix $(OBJDIR)/, test.o)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
 utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o curlutil.o)
 cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
@@ -28,7 +29,7 @@ wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
 gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
 txm_objs=$(addprefix $(OBJDIR)/, texturemanager.o packedtextures.o)
 objects=$(___objs) $(utl_objs) $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
-
+testObjects=$(___test) $(utl_objs) $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
 
 all:	executable
 
@@ -39,6 +40,9 @@ debug: executable
 
 executable: $(objects)
 	$(CC) $^ -o sdl-app $(LibPath) $(Libs)
+
+test: $(testObjects)
+	$(CC) $^ -o test-app $(LibPath) $(Libs)
 
 $(txm_objs): $(OBJDIR)/%.o: texturemanager/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
@@ -54,10 +58,12 @@ $(utl_objs): $(OBJDIR)/%.o: util/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(___objs): $(OBJDIR)/%.o: %.cpp
 	$(CC) -c $< -o $@ $(IncPath)
+$(___test): $(OBJDIR)/%.o: %.cpp
+	$(CC) -c $< -o $@ $(IncPath)
 
 
 clean:
-	rm -Rf *.o sdl-app
+	rm -Rf *.o sdl-app test-app
 	rm -Rf build/*
 
 setup:

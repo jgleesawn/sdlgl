@@ -3,7 +3,10 @@
 TextureManager * TextureManager::mSingleton = 0;
 
 TextureManager::TextureManager() {}
-TextureManager::~TextureManager() {}
+TextureManager::~TextureManager() {
+	for( int i=0; i<textures.size(); i++ )
+		delete textures[i];
+}
 
 TextureManager * TextureManager::getSingleton() {
 	if( mSingleton == 0 )
@@ -11,15 +14,16 @@ TextureManager * TextureManager::getSingleton() {
 	return mSingleton;
 }
 
-//Would like to remove if statement, opting for safer route
-//that doesn't require batch packing of textures to use them.
+////Would like to remove if statement, opting for safer route
+////that doesn't require batch packing of textures to use them.
+//Forcing packing of textures so that texture pointers don't change on the clengine.
 TextureLocation TextureManager::getTexture(AtlasLocation al) {
 	TextureLocation tl;
 	if( al.atlas < textures.size() ) {
-		tl.texture = textures[al.atlas].getTexture();
-		tl.lrect = textures[al.atlas].getPlacement(al.index);
+		tl.texture = textures[al.atlas]->getTexture();
+		tl.lrect = textures[al.atlas]->getPlacement(al.index);
 	} else {
-		tl.texture = unpacked[al.index];
+		tl.texture = 0;//unpacked[al.index];
 		tl.lrect = rects[al.index];
 	}
 	return tl;
@@ -54,10 +58,14 @@ AtlasLocation TextureManager::addTexture(SDL_Texture * newTex, SDL_Rect srcRect,
 }
 
 void TextureManager::packTextures(SDL_Renderer * ren) {
-	textures.emplace_back(ren, unpacked, rects);
+	if( unpacked.size() == 0 )
+		return;
+	textures.push_back(new PackedTextures(ren, unpacked, rects));
+	for( int i=0; i<textures.size(); i++ )
+		printf("packed texture %i: %i\n",i,textures[i]->getTexture());
 	for( int i=0; i<unpacked.size(); i++ ) {
-		if( owns[i] )
-			SDL_DestroyTexture(unpacked[i]);
+//		if( owns[i] )
+//			SDL_DestroyTexture(unpacked[i]);
 	}
 	unpacked.clear();
 	rects.clear();
