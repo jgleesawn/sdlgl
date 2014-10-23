@@ -17,7 +17,7 @@ PackedTextures::PackedTextures(SDL_Renderer * ren, std::vector<SDL_Texture *> & 
 	}
 
 	packedTexture = SDL_CreateTexture(ren, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, max_width, sum_height);
-	SDL_SetTextureBlendMode(packedTexture, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureBlendMode(packedTexture, SDL_BLENDMODE_NONE);
 
 	SDL_Texture * pTarget = SDL_GetRenderTarget(ren);
 	printf("Pack prev-renderer: %i\n",pTarget);
@@ -31,6 +31,7 @@ PackedTextures::PackedTextures(SDL_Renderer * ren, std::vector<SDL_Texture *> & 
 	}
 
 	SDL_SetRenderTarget(ren, pTarget);
+	SDL_SetTextureBlendMode(packedTexture, SDL_BLENDMODE_BLEND);
 }
 PackedTextures::~PackedTextures() {
 	SDL_DestroyTexture(packedTexture);

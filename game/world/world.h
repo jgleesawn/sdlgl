@@ -18,10 +18,11 @@ class World {
 	public:
 		World(int, int, SDL_Renderer *, CLEngine * cle_in=NULL);
 		~World();
-		void addObject(Object *);
+		void addObject(Object *, bool isFocus = false);
 		void stepSim(int);
 		int Size();
 		void Show();
+		void setFocus(int);
 };
 
 #endif

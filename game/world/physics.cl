@@ -13,6 +13,7 @@ CLK_FILTER_NEAREST;
 //#pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
 __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 			__constant int * w, __constant int * h,
+			__constant int * srcx, __constant int * srcy, 
 			__constant int * spriteFrame, __global float * movMod,
 			__read_only image2d_t bgTex, __read_only image2d_t sTex,
 //			__global int4 * bgTex, __global int4* sTex,
@@ -26,15 +27,21 @@ __kernel void MovementCompute(__constant int * wpos, __constant int * hpos,
 	int bgx = wpos[0]+x;
 	int bgy = hpos[0]+y;
 
+	x += srcx[0];
+	y += srcy[0];
+
 
 	float4 stp = read_imagef( sTex, sampler, (int2)(spriteFrame[0]*w[0]+x,y) );
-	sum[lid] = fabs( stp - read_imagef(bgTex,sampler,(int2)(bgx,bgy)) );
+	float4 btp = read_imagef(bgTex,sampler,(int2)(bgx,bgy));
+	sum[lid] = fabs( stp - btp );
 //	sum[lid] = abs_diff( stp, read_imagef(bgTex,sampler,(int2)(bgx,bgy)) );
 
 	if( stp.w > 0.0 )
 		sum[lid].w = 1;
 	else
 		sum[lid] = (float4)(0.0,0.0,0.0,0.0);
+
+	sum[lid] = btp;
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 	float4 sumd = (float4)(0.0, 0.0, 0.0, 0.0);

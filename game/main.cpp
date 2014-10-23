@@ -32,7 +32,8 @@ int main( int argc, char* args[] ) {
 		return 1;
 	}
 
-	window = SDL_CreateWindow( "Lesson 2", 100, 100, 640, 480, SDL_WINDOW_SHOWN );
+//	window = SDL_CreateWindow( "SDL Game", 100, 100, 640, 480, SDL_WINDOW_SHOWN );
+	window = SDL_CreateWindow( "SDL Game", 100, 100, 640, 640, SDL_WINDOW_SHOWN );
 	if( window == nullptr ) {
 		logSDLError(std::cout, "CreateWindow");
 		SDL_Quit();
@@ -48,14 +49,14 @@ int main( int argc, char* args[] ) {
 	cle->Init();
 	World world(640, 480, ren, cle);
 
-	Object player( "res/Char1.png", 4, ren, cle );
-	TextureManager().getSingleton()->packTextures(ren);
 	Object bgd( cu.getMap(42.2814, -83.7483), 1, ren, cle);
+	Object player( "res/Char1.png", 4, ren, cle );
+//	TextureManager().getSingleton()->packTextures(ren);
 	TextureManager().getSingleton()->packTextures(ren);
 
 //	Object bgd( "res/Background.png", 1, ren, cle );
 	world.addObject(&bgd);
-	world.addObject(&player);
+	world.addObject(&player, true);
 
 	bool quit = false;
 	SDL_Event event;
@@ -87,8 +88,8 @@ int main( int argc, char* args[] ) {
 			}
 		}
 
-		world.stepSim(1);
 		SDL_RenderClear(ren);
+		world.stepSim(1);
 		world.Show();
 		SDL_RenderPresent(ren);
 
