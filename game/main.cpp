@@ -1,16 +1,15 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_opengl.h>
+#include <GL/glu.h>
+
 #include <stdio.h>
 #include <string>
 #include <iostream>
 
 #include "util/cleanup.h"
 #include "util/sdlutil.h"
-#include "util/curlutil.h"
 
-#include "texturemanager/texturemanager.h"
-#include "clengine/clengine.h"
-#include "world/world.h"
+#include "sparseworld/sparseworld.h"
 
 void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
 	SDL_Rect dst;
@@ -23,43 +22,49 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
 int main( int argc, char* args[] ) {
 	SDL_Window* window = NULL;
 	SDL_Surface * screenSurface = NULL;
-	CLEngine * cle = new CLEngine();
 
-	CurlUtil cu;
-
-	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) {
+	if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
 		logSDLError(std::cout, "SDL_Init");
 		return 1;
 	}
 
 //	window = SDL_CreateWindow( "SDL Game", 100, 100, 640, 480, SDL_WINDOW_SHOWN );
-	window = SDL_CreateWindow( "SDL Game", 100, 100, 640, 640, SDL_WINDOW_SHOWN );
+	window = SDL_CreateWindow( "SDL Game", 100, 100, 640, 640, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 	if( window == nullptr ) {
 		logSDLError(std::cout, "CreateWindow");
 		SDL_Quit();
 		return 1;
 	}
-	SDL_Renderer *ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+/*
+	SDL_Renderer *ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE );
 	if( ren == nullptr ) {
 		logSDLError(std::cout, "CreateRenderer");
 		cleanup(window);
 		SDL_Quit();
 		return 1;
 	}
-	cle->Init();
-	World world(640, 480, ren, cle);
+*/
 
-	Object bgd( cu.getMap(42.2814, -83.7483), 1, ren, cle);
-	Object player( "res/Char1.png", 4, ren, cle );
-//	TextureManager().getSingleton()->packTextures(ren);
-	TextureManager().getSingleton()->packTextures(ren);
+//	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+//	SDL_GLContext glcontext;
+//	glClearColor(0,0,0,1);
+//	glClear(GL_COLOR_BUFFER_BIT);
+//	SDL_GL_SwapWindow(window);
 
-//	Object bgd( "res/Background.png", 1, ren, cle );
-	world.addObject(&bgd);
-	world.addObject(&player, true);
 
 	bool quit = false;
 	SDL_Event event;
+
+	SparseWorld sw;
+//	sw.test();
+	for( int i=0; i<1000; i++ ) {
+		vec4<float> pos = {(float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, 0};
+		if( sw.addNode(pos)->testIsSurrounded() != 6 )
+			printf("%i is not surrounded.\n",i);
+		sw.update();
+	}
+//	printf("\n\n");
+//	sw.test();
 
 	while( !quit ) {
 
@@ -71,40 +76,30 @@ int main( int argc, char* args[] ) {
 			case SDL_KEYDOWN:
 				switch( event.key.keysym.sym ) {
 				case SDLK_UP:
-					fprintf(stderr, "keydown.\n");
-					player.Move(0,-1);
 					break;
 				case SDLK_DOWN:
-					player.Move(0,1);
 					break;
 				case SDLK_LEFT:
-					player.Move(-1,0);
 					break;
 				case SDLK_RIGHT:
-					player.Move(1,0);
+					break;
+				case SDLK_ESCAPE:
+					quit = true;
 					break;
 				}
 				break;
 			}
 		}
 
-		SDL_RenderClear(ren);
-		world.stepSim(1);
-		world.Show();
-		SDL_RenderPresent(ren);
-
-		player.Step();
-
-//		player.Move(1,1);
+//		SDL_RenderClear(ren);
+//		SDL_RenderPresent(ren);
 
 		SDL_Delay( 100 );
 	}
 
 
-	delete cle;
-	delete TextureManager().getSingleton();
-
-	cleanup(ren,window);
+//	cleanup(&glcontext,window);
+//	cleanup(ren,window);
 	SDL_Quit();
 
 	return 0;
