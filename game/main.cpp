@@ -45,11 +45,10 @@ int main( int argc, char* args[] ) {
 	}
 */
 
-//	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
-//	SDL_GLContext glcontext;
-//	glClearColor(0,0,0,1);
-//	glClear(GL_COLOR_BUFFER_BIT);
-//	SDL_GL_SwapWindow(window);
+	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+	glClearColor(0,0,0,1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	SDL_GL_SwapWindow(window);
 
 
 	bool quit = false;
@@ -98,7 +97,7 @@ int main( int argc, char* args[] ) {
 	}
 
 
-//	cleanup(&glcontext,window);
+	cleanup(&glcontext,window);
 //	cleanup(ren,window);
 	SDL_Quit();
 

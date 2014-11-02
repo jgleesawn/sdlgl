@@ -1,26 +1,36 @@
 #ifndef SPARSEWORLD_H
 #define SPARSEWORLD_H
 
-#include <list>
-#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <utility>
+#include <stack>
 
-#include "sparsenode.h"
+#include <stdlib.h>
 
-class SparseWorld {
-	std::list<SparseNode *> All;
-	SparseNode * faces[6];
-public:
-	SparseWorld();
-	~SparseWorld();
+#include "util/othertypes.h"
 
-	void update();
-	SparseNode * addNode(vec4<float>);
-	SparseNode * addNode(vec4<float>, SparseNode *);
-
-	void test();
-	
+enum Dim {
+	X,
+	Y,
+	Z
 };
 
-void SparseWorld_Test();
+class SparseWorld {
+	std::vector<int> ibo[3];
+
+	std::vector<vec4<float> > vbo;
+
+	std::stack<int> removed_vertex_ind;
+
+	void sort_indices(Dim);
+public:
+	
+	void addVertex(vec4<float>);
+	void remVertex(int);
+
+	void sort();
+};
+
 
 #endif

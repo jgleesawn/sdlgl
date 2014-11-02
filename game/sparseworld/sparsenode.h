@@ -17,7 +17,7 @@ enum Dir {
 
 class SparseNode {
 protected:
-	vec4<float> position;
+	vec4<float> * position;
 //returns true while its updating;
 //returns false when finished;
 	bool updateD(Dim);
