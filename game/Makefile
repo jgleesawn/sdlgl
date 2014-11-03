@@ -4,7 +4,7 @@ CC=g++ -std=c++11
 CXX=g++ -std=c++11
 
 #SDL2Libs=$(shell sdl2-config --libs)
-SDL2Libs=-lSDL2 -lGL -lGLU
+SDL2Libs=-lSDL2 -lGL -lGLU -lGLEW
 #SDL2Libs+= -lSDL2_image
 
 CLLibs=-lOpenCL -lGLU
@@ -24,15 +24,12 @@ files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physics
 ___test=$(addprefix $(OBJDIR)/, test.o)
 ___objs=$(addprefix $(OBJDIR)/, main.o)
 utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o)
-spw_objs=$(addprefix $(OBJDIR)/, sparsenode.o sparseworld.o)
-cle_objs=$(addprefix $(OBJDIR)/, shader_util.o clengine.o physicsengine.o)
-obj_objs=$(addprefix $(OBJDIR)/, sprite.o object.o)
-wld_objs=$(addprefix $(OBJDIR)/, world.o worldengine.o)
-gen_objs=$(addprefix $(OBJDIR)/, generator.o generatorengine.o)
-txm_objs=$(addprefix $(OBJDIR)/, texturemanager.o packedtextures.o)
-objects=$(___objs) $(utl_objs) $(spw_objs)
+spw_objs=$(addprefix $(OBJDIR)/, sparseworld.o)
+obj_objs=$(addprefix $(OBJDIR)/, object.o renderable.o viewport.o)
+glm_objs=$(addprefix $(OBJDIR)/, shader_util.o glengine.o glmanager.o glprogrambase.o basicrenderer.o)
+objects=$(___objs) $(utl_objs) $(spw_objs) $(obj_objs) $(glm_objs)
 #objects+= $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
-testObjects=$(___test) $(utl_objs) $(spw_objs)
+testObjects=$(___test) $(utl_objs) $(spw_objs) $(obj_objs) $(glm_objs)
 #testObjects+= $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
 
 all:	executable
@@ -50,15 +47,11 @@ test: $(testObjects)
 
 $(txm_objs): $(OBJDIR)/%.o: texturemanager/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
-$(gen_objs): $(OBJDIR)/%.o: generator/%.cpp
+$(spw_objs): $(OBJDIR)/%.o: sparseworld/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
-$(wld_objs): $(OBJDIR)/%.o: world/%.cpp
+$(glm_objs): $(OBJDIR)/%.o: glmanager/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(obj_objs): $(OBJDIR)/%.o: object/%.cpp
-	$(CC) -c $< -o $@ $(IncPath)
-$(cle_objs): $(OBJDIR)/%.o: clengine/%.cpp
-	$(CC) -c $< -o $@ $(IncPath)
-$(spw_objs): $(OBJDIR)/%.o: sparseworld/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(utl_objs): $(OBJDIR)/%.o: util/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)

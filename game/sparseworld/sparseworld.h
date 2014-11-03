@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-#include "util/othertypes.h"
+#include "object/object.h"
 
 enum Dim {
 	X,
@@ -17,17 +17,13 @@ enum Dim {
 };
 
 class SparseWorld {
-	std::vector<int> ibo[3];
-
-	std::vector<vec4<float> > vbo;
-
-	std::stack<int> removed_vertex_ind;
+	std::vector<Object *> sortedObj[3];
 
 	void sort_indices(Dim);
 public:
 	
-	void addVertex(vec4<float>);
-	void remVertex(int);
+	void addVertex(Object *);
+	void remVertex(Object *);
 
 	void sort();
 };

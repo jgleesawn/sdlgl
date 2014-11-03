@@ -1,14 +1,18 @@
 #include <SDL2/SDL.h>
+#include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
-#include <GL/glu.h>
+//#include <GL/glu.h>
 
 #include <stdio.h>
 #include <string>
 #include <iostream>
 
+#include <glm/glm.hpp>
+
 #include "util/cleanup.h"
 #include "util/sdlutil.h"
 
+#include "glmanager/glengine.h"
 #include "sparseworld/sparseworld.h"
 
 void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
@@ -35,21 +39,13 @@ int main( int argc, char* args[] ) {
 		SDL_Quit();
 		return 1;
 	}
-/*
-	SDL_Renderer *ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE );
-	if( ren == nullptr ) {
-		logSDLError(std::cout, "CreateRenderer");
-		cleanup(window);
-		SDL_Quit();
-		return 1;
-	}
-*/
 
 	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
 	glClearColor(0,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(window);
 
+	GLEngine gle;
 
 	bool quit = false;
 	SDL_Event event;
@@ -57,10 +53,9 @@ int main( int argc, char* args[] ) {
 	SparseWorld sw;
 //	sw.test();
 	for( int i=0; i<1000; i++ ) {
-		vec4<float> pos = {(float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, 0};
-		if( sw.addNode(pos)->testIsSurrounded() != 6 )
-			printf("%i is not surrounded.\n",i);
-		sw.update();
+		glm::vec4 pos((float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, 0);
+		sw.addVertex(new Object(pos));
+		sw.sort();
 	}
 //	printf("\n\n");
 //	sw.test();

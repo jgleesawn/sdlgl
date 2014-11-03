@@ -1,0 +1,12 @@
+Requires Libs:
+GL
+GLEW
+GLM
+SDL2
+
+Todo:
+ObjectManager
+	-Importing
+WorldCreator
+	-Interface
+	-Uses imported objects

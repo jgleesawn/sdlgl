@@ -1,32 +1,21 @@
 #include "sparseworld.h"
 
 
-void SparseWorld::addVertex(vec4<float> pos) {
-	int ind;
-	if( removed_vertex_ind.size() ) {
-		ind = removed_vertex_ind.back();
-		removed_vertex_ind.pop_back();
-		vbo.at(ind) = pos;
-		for( int i=0; i<3; i++ )
-			ibo[i].push_back(ind);
-	} else {
-		vbo.push_back(pos);
-		for( int i=0; i<3; i++ )
-			ibo[i].push_back(ibo[i].size());
-	}
+void SparseWorld::addVertex(Object * obj) {
+	for( int i=0; i<3; i++ )
+		sortedObj[i].push_back(obj);
 }
 
-void SparseWorld::remVertex(int ind) {
+void SparseWorld::remVertex(Object * obj) {
 	for( int i=0; i<3; i++ )
-		ibo[i].erase(std::search(ibo[i].begin(), ibo[i].end(), &ind, &ind+1))
-	removed_vertex_ind.push_back(ind);
+		sortedObj[i].erase(std::search(sortedObj[i].begin(), sortedObj[i].end(), &obj, &obj+1));
 }
 
 void SparseWorld::sort_indices(Dim d) {
-	for( int i=0; i<ibo[d].size(); i++ ) {
-		for( int j=i+1; j<ibo[d].size(); j++ ) {
-			if( vbo[ibo[d][i]].data[d] > vbo[ibo[d][j]].data[d] )
-				std::swap(ibo[d][i], ibo[d][j]);
+	for( int i=0; i<sortedObj[d].size(); i++ ) {
+		for( int j=i+1; j<sortedObj[d].size(); j++ ) {
+			if( sortedObj[d][i]->position[d] > sortedObj[d][j]->position[d] )
+				std::swap(sortedObj[d][i], sortedObj[d][j]);
 		}
 	}
 }

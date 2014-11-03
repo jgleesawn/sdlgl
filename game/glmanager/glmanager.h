@@ -1,12 +1,13 @@
 #ifndef GLMANAGER_H
 #define GLMANAGER_H
 
-#include <GL/gl.h>
+#include <GL/glew.h>
+//#include <GL/gl.h>
+//#include <SDL2/SDL_opengl.h>
 #include <vector>
+#include <glm/glm.hpp>
 
-#include "util/othertypes.h"
-
-struct gfxObjID {
+struct gfxObj_t {
 	int vao;
 	int ind;
 };
@@ -24,12 +25,12 @@ struct ObjGroup {
 
 class GLmanager {
 	std::vector<ObjGroup *> gfxObjs;
-	
+
 public:
 	~GLmanager();
-	bool Load(std::vector<std::vector<vec4<float> > * > * vbos_in, std::vector< std::vector<int> * > * ibos_in)
-	void Update(gfxObjID, std::vector<float>);
-	void Render(gfxObjID, vec4<float>, float[16]);
+	std::vector<gfxObj_t> Load(std::vector<std::vector<glm::vec4 > * > * vbos_in, std::vector< std::vector<int> * > * ibos_in);
+	void Update(gfxObj_t, std::vector<float>);
+	void Render(gfxObj_t);
 };
 
 #endif
