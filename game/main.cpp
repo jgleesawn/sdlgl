@@ -41,22 +41,30 @@ int main( int argc, char* args[] ) {
 	}
 
 	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
-	glClearColor(0,0,0,1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	SDL_GL_SwapWindow(window);
 
-	GLEngine gle;
+	GLEngine gle; //calls glewInit;
+	BasicRenderer ren;
+	Viewport view(glm::vec4(0,0,-10,0));
+
+
+	std::vector<std::string> fileNames;
+	fileNames.push_back("res/untitled.obj");
+//	fileNames.push_back("res/untitled1.obj");
+
+	std::vector<gfxObj_t> gfxObjs = gle.glm.Load(fileNames);
+	SparseWorld sw;
+
+	std::vector<Renderable *> renObjs;
 
 	bool quit = false;
 	SDL_Event event;
 
-	SparseWorld sw;
-//	sw.test();
-	for( int i=0; i<1000; i++ ) {
+	for( int i=0; i<gfxObjs.size(); i++ ) {
 		glm::vec4 pos((float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, 0);
-		sw.addVertex(new Object(pos));
-		sw.sort();
+		renObjs.push_back(new Renderable(pos, gfxObjs[i]));
+		sw.addVertex(renObjs.back());
 	}
+	sw.sort();
 //	printf("\n\n");
 //	sw.test();
 
@@ -85,8 +93,13 @@ int main( int argc, char* args[] ) {
 			}
 		}
 
-//		SDL_RenderClear(ren);
-//		SDL_RenderPresent(ren);
+		glClearColor(0,0,0,1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		for( int i=0; i<renObjs.size(); i++ )
+			gle.Render(&ren, renObjs[i], &view);
+
+		SDL_GL_SwapWindow(window);
 
 		SDL_Delay( 100 );
 	}

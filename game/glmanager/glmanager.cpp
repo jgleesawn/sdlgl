@@ -18,22 +18,31 @@ GLmanager::~GLmanager() {
 
 //vbos are updated	(DYNAMIC)
 //ibos are not		(STATIC)
-std::vector<gfxObj_t> GLmanager::Load( std::vector< std::vector<glm::vec4> * > * vbos_in, std::vector< std::vector<int> * > * ibos_in ) {
+std::vector<gfxObj_t> GLmanager::Load( const std::vector< objModel > & vobj ) {
 	std::vector<gfxObj_t> out;
-	if( vbos_in->size() != ibos_in->size() )
+	if( vobj.empty() )
 		return out;
 
 	int vbo_size = 0;
 	int ibo_size = 0;
-	for( int i=0; i<vbos_in->size(); i++ ) {
-		vbo_size += vbos_in->at(i)->size();
-		ibo_size += ibos_in->at(i)->size();
+	for( int i=0; i<vobj.size(); i++ ) {
+		for( int j=0; j<vobj[i].vertices.size(); j++ ) {
+			for( int k=0; k<4; k++ )
+				std::cout << vobj[i].vertices[j][k] << " ";
+			std::cout << std::endl;
+		}
+		for( int j=0; j<vobj[i].indices.size(); j++ )
+			std::cout << vobj[i].indices[j] << " ";
+		std::cout << std::endl;
+
+		vbo_size += vobj[i].vertices.size();
+		ibo_size += vobj[i].indices.size();
 	}
 
 	ObjGroup * og = new ObjGroup;
 
-	og->vbo_struct_size = sizeof(*vbos_in->at(0)->data());
-	og->ibo_struct_size = sizeof(*ibos_in->at(0)->data());
+	og->vbo_struct_size = sizeof(*vobj[0].vertices.data());
+	og->ibo_struct_size = sizeof(*vobj[0].indices.data());
 	
 	glGenBuffers(1, &og->VBO);
 	glBindBuffer( GL_ARRAY_BUFFER, og->VBO);
@@ -51,16 +60,16 @@ std::vector<gfxObj_t> GLmanager::Load( std::vector< std::vector<glm::vec4> * > *
 
 	int vbo_offset, ibo_offset;
 	vbo_offset = ibo_offset = 0;	
-	for( int i=0; i<vbos_in->size(); i++ ) {
+	for( int i=0; i<vobj.size(); i++ ) {
 		gfxObj_t go = {(int)gfxObjs.size(), i};
 		out.push_back(go);
 
 		og->VBOStartingIndices.push_back(vbo_offset);
 		og->IBOStartingIndices.push_back(ibo_offset);
-		glBufferSubData( GL_ARRAY_BUFFER, vbo_offset*og->vbo_struct_size, vbos_in->at(i)->size()*og->vbo_struct_size, vbos_in->at(i)->data() );
-		vbo_offset += vbos_in->at(i)->size();
-		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, ibo_offset*og->ibo_struct_size, ibos_in->at(9)->size()*og->ibo_struct_size, ibos_in->at(i)->data() );
-		ibo_offset += ibos_in->at(i)->size();
+		glBufferSubData( GL_ARRAY_BUFFER, vbo_offset*og->vbo_struct_size, vobj[i].vertices.size()*og->vbo_struct_size, vobj[i].vertices.data() );
+		vbo_offset += vobj[i].vertices.size();
+		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, ibo_offset*og->ibo_struct_size, vobj[i].indices.size()*og->ibo_struct_size, vobj[i].indices.data() );
+		ibo_offset += vobj[i].vertices.size();
 	}
 	og->VBOStartingIndices.push_back(vbo_offset);
 	og->IBOStartingIndices.push_back(ibo_offset);
@@ -72,6 +81,13 @@ std::vector<gfxObj_t> GLmanager::Load( std::vector< std::vector<glm::vec4> * > *
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return out;
+}
+
+std::vector<gfxObj_t> GLmanager::Load(const std::vector< std::string > & fileNames ) {
+	std::vector<objModel> vobj;
+	for( int i=0; i<fileNames.size(); i++ )
+		vobj.push_back(std::move(loadObjFile(fileNames[i])));
+	return Load(vobj);
 }
 
 void GLmanager::Render(gfxObj_t goID) {

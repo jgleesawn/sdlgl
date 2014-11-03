@@ -4,9 +4,9 @@
 //VE is created before GL context is set up.
 void BasicRenderer::Init() {
 	std::vector<shaderName> shaderNames;
-	shaderNames.push_back(shaderName(GL_VERTEX_SHADER, std::string("basic.v.shader")));
-//	shaderNames.push_back(shaderName(GL_GEOMETRY_SHADER, std::string("basic.g.shader")));
-	shaderNames.push_back(shaderName(GL_FRAGMENT_SHADER, std::string("basic.f.shader")));
+	shaderNames.push_back(shaderName(GL_VERTEX_SHADER, std::string("renderers/basic.v.shader")));
+//	shaderNames.push_back(shaderName(GL_GEOMETRY_SHADER, std::string("renderers/basic.g.shader")));
+	shaderNames.push_back(shaderName(GL_FRAGMENT_SHADER, std::string("renderers/basic.f.shader")));
 
 	theProgram = GLProgramBase().InitializeProgram(shaderNames);
 
@@ -39,6 +39,7 @@ void BasicRenderer::Render( Renderable * objs, Viewport * view ) {
 	glUniformMatrix4fv(1, 1, GL_FALSE, &objs->rotationMatrix[0][0]);
 	glUniform4f(2, view->pos[0], view->pos[1], view->pos[2], 0.0f);
 	glUniformMatrix4fv(3, 1, GL_FALSE, &view->rotationMatrix[0][0]);
+	glUniformMatrix4fv(4, 1, GL_FALSE, &view->perspectiveMatrix[0][0]);
 }
 
 void reshape (int w, int h)

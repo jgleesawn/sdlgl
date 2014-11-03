@@ -16,9 +16,12 @@ layout(location = 4) uniform mat4 Perspective;
 
 void main()
 {
-	vertexCoord.w = 1.0f;
-	vec4 vertexPos = ( vertexCoord * objRotation ) + objPosition;
-	gl_Position = ( vertexPos - viewOffset ) * (viewRotation * Perspective);
+//	vertexCoord.w = 1.0f;
+//	vec4 vertexPos = ( vertexCoord * objRotation ) + objPosition;
+//	gl_Position = ( vertexPos - viewOffset ) * (viewRotation * Perspective);
+	gl_Position = vertexCoord;
+	gl_Position.w = 1.0f;
+	gl_Position.z -= 5.0f;
 //	vec4 cameraPos = vec4( uOffset.xyz, 1.0f );
 //	cameraPos.xyz += position.xyz;
 //	gl_Position = perspectiveMatrix * cameraPos;
