@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
 
 #include "object/renderable.h"
 #include "object/viewport.h"
@@ -12,11 +13,11 @@
 
 class BasicRenderer {
 
-	GLuint theProgram;	
-	void SetPerspective();
-
+	GLuint theProgram;
+	GLint uvar[5];	//Uniform variables used because #120 doesn't support explicit locations
 public:
-	void Init();
+	BasicRenderer();
+	~BasicRenderer() { glDeleteProgram(theProgram); }
 
 	void Render(Renderable *, Viewport *);
 

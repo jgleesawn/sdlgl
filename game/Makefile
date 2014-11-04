@@ -1,7 +1,7 @@
 deppath=../deps/
 
-CC=g++ -std=c++11
-CXX=g++ -std=c++11
+CC=g++ -std=c++11 -g
+CXX=g++ -std=c++11 -g
 
 #SDL2Libs=$(shell sdl2-config --libs)
 SDL2Libs=-lSDL2 -lGL -lGLU -lGLEW

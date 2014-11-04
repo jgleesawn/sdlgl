@@ -26,15 +26,6 @@ std::vector<gfxObj_t> GLmanager::Load( const std::vector< objModel > & vobj ) {
 	int vbo_size = 0;
 	int ibo_size = 0;
 	for( int i=0; i<vobj.size(); i++ ) {
-		for( int j=0; j<vobj[i].vertices.size(); j++ ) {
-			for( int k=0; k<4; k++ )
-				std::cout << vobj[i].vertices[j][k] << " ";
-			std::cout << std::endl;
-		}
-		for( int j=0; j<vobj[i].indices.size(); j++ )
-			std::cout << vobj[i].indices[j] << " ";
-		std::cout << std::endl;
-
 		vbo_size += vobj[i].vertices.size();
 		ibo_size += vobj[i].indices.size();
 	}
@@ -54,12 +45,15 @@ std::vector<gfxObj_t> GLmanager::Load( const std::vector< objModel > & vobj ) {
 
 	glGenVertexArrays(1, &og->VAO);
 	glBindVertexArray(og->VAO);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, og->vbo_struct_size, (void*) 0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, og->vbo_struct_size, (void*) 0);
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, og->IBO);
+	glBindVertexArray(0);
+	glDisableVertexAttribArray(0);
 
 	int vbo_offset, ibo_offset;
 	vbo_offset = ibo_offset = 0;	
+
 	for( int i=0; i<vobj.size(); i++ ) {
 		gfxObj_t go = {(int)gfxObjs.size(), i};
 		out.push_back(go);
@@ -73,10 +67,9 @@ std::vector<gfxObj_t> GLmanager::Load( const std::vector< objModel > & vobj ) {
 	}
 	og->VBOStartingIndices.push_back(vbo_offset);
 	og->IBOStartingIndices.push_back(ibo_offset);
+
 	gfxObjs.push_back(og);
 
-	glBindVertexArray(0);
-	glDisableVertexAttribArray(0);
 	glBindBuffer( GL_ARRAY_BUFFER, 0);
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -93,7 +86,7 @@ std::vector<gfxObj_t> GLmanager::Load(const std::vector< std::string > & fileNam
 void GLmanager::Render(gfxObj_t goID) {
 	GLuint vao = gfxObjs.at(goID.vao)->VAO;
 	int ind = goID.ind;
-	
+
 	glBindVertexArray(vao);
 
 	int count = gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind+1) - gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind);

@@ -12,6 +12,7 @@ GLuint GLProgramBase::InitializeProgram(std::vector<shaderName> & shaderNames)
 	
 	theProgram = CreateProgram(shaderList);
 	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+	return theProgram;
 }
 
 GLuint GLProgramBase::CreateShader(GLenum eShaderType, const std::string &strShaderFile) {

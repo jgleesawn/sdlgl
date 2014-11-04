@@ -31,9 +31,9 @@ objModel loadObjFile(const std::string & fileName) {
 		} else if ( qualifier == "f" ) {
 			sstr >> faceInd[0] >> faceInd[1] >> faceInd[2] >> faceInd[3];
 			for( int i=0; i<3; i++ )
-				om.indices.push_back(faceInd[i]+indOffset);
+				om.indices.push_back(faceInd[i]+indOffset - 1);
 			for( int i=2; i<5; i++ )
-				om.indices.push_back(faceInd[i%4]+indOffset);
+				om.indices.push_back(faceInd[i%4]+indOffset - 1);
 		} else {
 		}
 	}

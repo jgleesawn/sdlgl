@@ -42,7 +42,7 @@ template<>
 void cleanup<SDL_GLContext>(SDL_GLContext * glcontext) {
 	if(!glcontext)
 		return;
-	SDL_GL_DeleteContext(glcontext);
+	SDL_GL_DeleteContext(*glcontext);
 }
 
 

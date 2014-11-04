@@ -13,7 +13,6 @@ public:
 	GLmanager glm;
 	void Render( BasicRenderer *, Renderable *, Viewport * );
 	GLEngine() { glewInit(); }
-	~GLEngine() { glDeleteProgram(theProgram); }
 };
 
 #endif

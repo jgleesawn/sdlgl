@@ -40,16 +40,23 @@ int main( int argc, char* args[] ) {
 		return 1;
 	}
 
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+//	SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+
 	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
 
 	GLEngine gle; //calls glewInit;
+//	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_DEPTH_TEST);
+//	glDisable(GL_CULL_FACE);
 	BasicRenderer ren;
-	Viewport view(glm::vec4(0,0,-10,0));
+	Viewport view(glm::vec4(0,0,10,0));
 
 
 	std::vector<std::string> fileNames;
 	fileNames.push_back("res/untitled.obj");
-//	fileNames.push_back("res/untitled1.obj");
+	fileNames.push_back("res/untitled1.obj");
 
 	std::vector<gfxObj_t> gfxObjs = gle.glm.Load(fileNames);
 	SparseWorld sw;
@@ -94,7 +101,7 @@ int main( int argc, char* args[] ) {
 		}
 
 		glClearColor(0,0,0,1);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		for( int i=0; i<renObjs.size(); i++ )
 			gle.Render(&ren, renObjs[i], &view);
