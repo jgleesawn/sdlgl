@@ -4,11 +4,10 @@
 #include "object.h"
 #include "glmanager/glmanager.h"
 
-class Renderable : public Object {
+class Renderable : public Orientable {
 public:
 	gfxObj_t gfxObj;
-	glm::mat4 rotationMatrix;
-	Renderable(glm::vec4, gfxObj_t, glm::mat4 rot_in = glm::mat4(1.0f));
+	Renderable(glm::vec4, gfxObj_t, glm::vec3 or_in = glm::vec3(0.0f,0.0f,1.0f));
 };
 
 

@@ -15,17 +15,8 @@
 #include "glmanager/glengine.h"
 #include "sparseworld/sparseworld.h"
 
-void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y) {
-	SDL_Rect dst;
-	dst.x = x;
-	dst.y = y;
-	SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-	SDL_RenderCopy(ren, tex, NULL, &dst);
-}
-
 int main( int argc, char* args[] ) {
 	SDL_Window* window = NULL;
-	SDL_Surface * screenSurface = NULL;
 
 	if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
 		logSDLError(std::cout, "SDL_Init");
@@ -48,15 +39,17 @@ int main( int argc, char* args[] ) {
 
 	GLEngine gle; //calls glewInit;
 //	glEnable(GL_DEPTH_CLAMP);
-	glEnable(GL_DEPTH_TEST);
+ 	glEnable(GL_DEPTH_TEST);
 //	glDisable(GL_CULL_FACE);
 	BasicRenderer ren;
-	Viewport view(glm::vec4(0,0,10,0));
+	Viewport view(glm::vec4(0,0,20,0));
 
 
 	std::vector<std::string> fileNames;
-	fileNames.push_back("res/untitled.obj");
-	fileNames.push_back("res/untitled1.obj");
+	fileNames.push_back("res/nonTriangle/plane.obj");
+	for( int i=0; i<100; i++ )
+		fileNames.push_back("res/nonTriangle/untitled1.obj");
+//	fileNames.push_back("res/nonTriangle/untitled.obj");
 
 	std::vector<gfxObj_t> gfxObjs = gle.glm.Load(fileNames);
 	SparseWorld sw;
@@ -66,8 +59,14 @@ int main( int argc, char* args[] ) {
 	bool quit = false;
 	SDL_Event event;
 
-	for( int i=0; i<gfxObjs.size(); i++ ) {
+	renObjs.push_back(new Renderable(glm::vec4(0.0f, -50.0f, 0.0f, 0.0f), gfxObjs[0]));
+	sw.addVertex(renObjs.back());
+	for( int i=1; i<gfxObjs.size(); i++ ) {
 		glm::vec4 pos((float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, 0);
+/*		glm::vec4 pos(0);
+		pos[i/2] = (i%2)*2 - 1; */
+		pos *= 100.0f;
+		pos -= 50.0f;
 		renObjs.push_back(new Renderable(pos, gfxObjs[i]));
 		sw.addVertex(renObjs.back());
 	}
@@ -85,15 +84,26 @@ int main( int argc, char* args[] ) {
 			case SDL_KEYDOWN:
 				switch( event.key.keysym.sym ) {
 				case SDLK_UP:
+					view.rotPerpendicular(-.1);
+//					view.pos.z -= 1;
 					break;
 				case SDLK_DOWN:
+					view.rotPerpendicular(.1);
+//					view.pos.z += 1;
 					break;
 				case SDLK_LEFT:
+					view.rotParallel(-.1);
+//					view.pos.x -= 1;
 					break;
 				case SDLK_RIGHT:
+					view.rotParallel(.1);
+//					view.pos.x += 1;
 					break;
 				case SDLK_ESCAPE:
 					quit = true;
+					break;
+				case SDLK_SPACE:
+					view.Move(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
 					break;
 				}
 				break;
@@ -108,7 +118,7 @@ int main( int argc, char* args[] ) {
 
 		SDL_GL_SwapWindow(window);
 
-		SDL_Delay( 100 );
+		SDL_Delay( 20 );
 	}
 
 

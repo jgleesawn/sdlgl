@@ -1,0 +1,11 @@
+# Blender v2.72 (sub 0) OBJ File: ''
+# www.blender.org
+mtllib plane.mtl
+o Plane
+v 3.548623 5.443963 12.257606
+v 19.936867 5.443963 12.257606
+v 3.548623 5.443963 -4.130637
+v 19.936867 5.443963 -4.130637
+usemtl None
+s off
+f 1 2 4 3

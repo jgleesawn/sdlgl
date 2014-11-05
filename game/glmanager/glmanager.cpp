@@ -63,8 +63,9 @@ std::vector<gfxObj_t> GLmanager::Load( const std::vector< objModel > & vobj ) {
 		glBufferSubData( GL_ARRAY_BUFFER, vbo_offset*og->vbo_struct_size, vobj[i].vertices.size()*og->vbo_struct_size, vobj[i].vertices.data() );
 		vbo_offset += vobj[i].vertices.size();
 		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, ibo_offset*og->ibo_struct_size, vobj[i].indices.size()*og->ibo_struct_size, vobj[i].indices.data() );
-		ibo_offset += vobj[i].vertices.size();
+		ibo_offset += vobj[i].indices.size();
 	}
+//	std::cout << vbo_offset << std::endl << ibo_offset << std::endl;
 	og->VBOStartingIndices.push_back(vbo_offset);
 	og->IBOStartingIndices.push_back(ibo_offset);
 
@@ -92,7 +93,9 @@ void GLmanager::Render(gfxObj_t goID) {
 	int count = gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind+1) - gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind);
 	int indoffset = gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind) * gfxObjs.at(goID.vao)->ibo_struct_size;
 	int baseoffset = gfxObjs.at(goID.vao)->VBOStartingIndices.at(goID.ind);
+//	glDrawElementsBaseVertex( GL_LINES, count, GL_UNSIGNED_INT, (void*)indoffset, baseoffset);
 	glDrawElementsBaseVertex( GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)indoffset, baseoffset);
+//	glDrawElementsBaseVertex( GL_POINTS, count, GL_UNSIGNED_INT, (void*)indoffset, baseoffset);
 
 	glBindVertexArray(0);
 }
