@@ -25,6 +25,8 @@ public:
 
 	void rotParallel(float);
 	void rotPerpendicular(float);
+
+	glm::mat4 getRotMat();
 };
 
 void printv(const glm::vec3 &);

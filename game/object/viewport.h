@@ -12,6 +12,7 @@
 #include "object.h"
 
 class Viewport : public Orientable {
+	float pitch, yaw;
 public:
 	glm::mat4 perspectiveMatrix;
 
@@ -19,6 +20,8 @@ public:
 	void Move(glm::vec4);
 	void rotParallel(float);
 	void rotPerpendicular(float);
+
+	glm::mat4 getRotMat();
 };
 
 #endif

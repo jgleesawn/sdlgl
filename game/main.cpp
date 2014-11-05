@@ -85,19 +85,15 @@ int main( int argc, char* args[] ) {
 				switch( event.key.keysym.sym ) {
 				case SDLK_UP:
 					view.rotPerpendicular(-.1);
-//					view.pos.z -= 1;
 					break;
 				case SDLK_DOWN:
 					view.rotPerpendicular(.1);
-//					view.pos.z += 1;
 					break;
 				case SDLK_LEFT:
 					view.rotParallel(-.1);
-//					view.pos.x -= 1;
 					break;
 				case SDLK_RIGHT:
 					view.rotParallel(.1);
-//					view.pos.x += 1;
 					break;
 				case SDLK_ESCAPE:
 					quit = true;
