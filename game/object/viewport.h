@@ -30,14 +30,4 @@ public:
 	glm::mat4 getRotMat();
 };
 
-namespace std {
-	template<>
-	struct less<void(Viewport::* const)()> {
-		bool operator() ( void(Viewport::* const lhs )(), void(Viewport::* const rhs)()) {
-			return reinterpret_cast<const void *>(lhs) < reinterpret_cast<const void *>(rhs);
-		}
-	};
-}
-
-
 #endif
