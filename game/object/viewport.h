@@ -8,6 +8,7 @@
 #include <glm/gtx/euler_angles.hpp>
 
 #include <iostream>
+#include <functional>
 
 #include "object.h"
 
@@ -16,12 +17,27 @@ class Viewport : public Orientable {
 public:
 	glm::mat4 perspectiveMatrix;
 
-	Viewport(glm::vec4, glm::vec3 or_in = glm::vec3(0.0f,0.0f,-1.0f), glm::mat4 perspec_in = glm::perspective(glm::radians(45.0f), 1.0f, .1f, 100.0f));
+	Viewport(glm::vec4, glm::quat or_in = glm::quat(), glm::mat4 perspec_in = glm::perspective(glm::radians(45.0f), 1.0f, .1f, 100.0f));
 	void Move(glm::vec4);
-	void rotParallel(float);
-	void rotPerpendicular(float);
+	void rotY(float);
+	void rotX(float);
+	void rotUp(){ rotX(-.1); }
+	void rotDown(){ rotX(.1); }
+	void rotLeft(){ rotY(-.1); }
+	void rotRight(){ rotY(.1); }
+	void Forward() { Move(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)); }
 
 	glm::mat4 getRotMat();
 };
+
+namespace std {
+	template<>
+	struct less<void(Viewport::* const)()> {
+		bool operator() ( void(Viewport::* const lhs )(), void(Viewport::* const rhs)()) {
+			return reinterpret_cast<const void *>(lhs) < reinterpret_cast<const void *>(rhs);
+		}
+	};
+}
+
 
 #endif

@@ -16,15 +16,14 @@ public:
 
 class Orientable : public Object {
 protected:
-	glm::vec3 verticle;
+//	glm::vec3 verticle;
 public:
-	glm::vec3 orientation;
-	glm::quat rotation;
-//	glm::quat orientation;
-	Orientable(glm::vec4, glm::vec3 or_in = glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::quat orientation;
+	Orientable(glm::vec4, glm::quat or_in = glm::quat());
 
-	void rotParallel(float);
-	void rotPerpendicular(float);
+	void dQuat(const glm::quat &);
+//	void rotParallel(float);
+//	void rotPerpendicular(float);
 
 	glm::mat4 getRotMat();
 };

@@ -28,7 +28,7 @@ BasicRenderer::BasicRenderer() {
 //Transpose = GL_TRUE because GLSL uses Column-Major where C++ typicall uses Row-Major
 void BasicRenderer::Render( Renderable * objs, Viewport * view ) {
 //	glm::mat4 orotMat = glm::toMat4(glm::rotation(glm::vec3(0.0f, 0.0f, 1.0f), objs->orientation));
-	glm::mat4 orotMat = glm::toMat4(objs->rotation);
+	glm::mat4 orotMat = glm::toMat4(objs->orientation);
 	glm::mat4 vrotMat = view->getRotMat();
 //	glm::mat4 vrotMat = glm::toMat4(glm::rotation(glm::vec3(0.0f, 0.0f, -1.0f), view->orientation));
 

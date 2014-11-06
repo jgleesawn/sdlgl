@@ -21,16 +21,18 @@ filedir=generator
 OBJDIR=build
 
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
-___test=$(addprefix $(OBJDIR)/, test.o)
-___objs=$(addprefix $(OBJDIR)/, main.o)
+___test=$(addprefix $(OBJDIR)/, test.o )
+___objs=$(addprefix $(OBJDIR)/, main.o game.o)
 utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o)
 spw_objs=$(addprefix $(OBJDIR)/, sparseworld.o)
 obj_objs=$(addprefix $(OBJDIR)/, object.o renderable.o viewport.o)
 glm_objs=$(addprefix $(OBJDIR)/, shader_util.o objloader.o objmodel.o glengine.o glmanager.o glprogrambase.o basicrenderer.o)
-objects=$(___objs) $(utl_objs) $(spw_objs) $(obj_objs) $(glm_objs)
+itf_objs=$(addprefix $(OBJDIR)/, ) #interface.o)
+
+objects=$(___objs) $(utl_objs) $(spw_objs) $(obj_objs) $(glm_objs) $(itf_objs)
 #objects+= $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
-testObjects=$(___test) $(utl_objs) $(spw_objs) $(obj_objs) $(glm_objs)
-#testObjects+= $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs)
+testObjects=$(___test) $(utl_objs) $(spw_objs) $(obj_objs) $(glm_objs) $(itf_objs)
+#testObjects+= $(cle_objs) $(obj_objs) $(wld_objs) $(txm_objs) 
 
 all:	executable
 
@@ -45,6 +47,9 @@ executable: $(objects)
 test: $(testObjects)
 	$(CC) $^ -o test-app $(LibPath) $(Libs)
 
+
+$(itf_objs): $(OBJDIR)/%.o: interface/%.cpp
+	$(CC) -c $< -o $@ $(IncPath)
 $(txm_objs): $(OBJDIR)/%.o: texturemanager/%.cpp
 	$(CC) -c $< -o $@ $(IncPath)
 $(spw_objs): $(OBJDIR)/%.o: sparseworld/%.cpp

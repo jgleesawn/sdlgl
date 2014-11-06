@@ -7,7 +7,7 @@
 class Renderable : public Orientable {
 public:
 	gfxObj_t gfxObj;
-	Renderable(glm::vec4, gfxObj_t, glm::vec3 or_in = glm::vec3(0.0f,0.0f,1.0f));
+	Renderable(glm::vec4, gfxObj_t, glm::quat or_in = glm::quat());
 };
 
 
