@@ -57,7 +57,7 @@ int main( int argc, char* args[] ) {
 
 		SDL_GL_SwapWindow(window);
 
-		SDL_Delay( 20 );
+//		SDL_Delay( 20 );
 	}
 
 

@@ -13,12 +13,15 @@
 #include "sparseworld/sparseworld.h"
 #include "interface/interface.h"
 
+#include "sparseworld/world.h"
+
 class Game {
 	
 public:
 	GLEngine gle;
 	BasicRenderer ren;
 	Viewport view;
+	World w;
 	SparseWorld sw;
 
 	std::vector<input> inputs;

@@ -3,21 +3,29 @@
 Game::Game() : view(glm::vec4(0.0f, 0.0f, 20.0f, 0.0f)) {
 	glEnable(GL_DEPTH_TEST);
 	std::vector<std::string> fileNames;
-	for( int i=0; i<100; i++ )
-		fileNames.push_back("res/nonTriangle/untitled1.obj");
+
+for( int j=0; j<1; j++ ) {
+	fileNames.clear();
+	for( int i=0; i<1000; i++ )
+		fileNames.push_back("res/nonTriangle/untitled.obj");
+//		fileNames.push_back("res/nonTriangle/untitled1.obj");
 
 	gfxObjs = gle.glm.Load(fileNames);
 
 	for( int i=0; i<gfxObjs.size(); i++ ) {
 		glm::vec4 pos((float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX );
-		pos *= 100.0f;
+		pos *= 500.0f;
 		pos -= 50.0f;
 		glm::quat q((float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5 );
 		q = glm::normalize(q);
 		renObjs.push_back(new Renderable(pos, gfxObjs[i], q));
-		sw.addVertex(renObjs.back());
+		w.addObject(renObjs.back());
 	}
-	sw.sort();
+}
+//	std::cout << w.ot.ncount << std::endl;
+	for( int i=0; i<8; i++ )
+		std::cout << ((Branch *)(w.ot.Nodes[i]))->ncount << " ";
+	std::cout << std::endl;
 
 	interface.m[&Viewport::rotUp] = SDL_SCANCODE_UP;
 	interface.m[&Viewport::rotDown] = SDL_SCANCODE_DOWN;
@@ -35,6 +43,7 @@ void Game::addInput(const void * state, int count, int stepsize) {
 
 }
 void Game::Loop() {
+//	std::cout << w.ot.UR[0] << std::endl;
 	interface.Loop(&view);
 
 	glClearColor(0,0,0,1);

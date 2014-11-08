@@ -1,7 +1,7 @@
 deppath=../deps/
 
-CC=g++ -std=c++11 -g
-CXX=g++ -std=c++11 -g
+CC=g++ -std=c++11 -g -Wfatal-errors
+CXX=g++ -std=c++11 -g -Wfatal-errors
 
 #SDL2Libs=$(shell sdl2-config --libs)
 SDL2Libs=-lSDL2 -lGL -lGLU -lGLEW
@@ -23,8 +23,8 @@ OBJDIR=build
 files=$(addprefix generator/, generator.cpp clengine.cpp shader_util.cpp physicsengine.cpp)
 ___test=$(addprefix $(OBJDIR)/, test.o )
 ___objs=$(addprefix $(OBJDIR)/, main.o game.o)
-utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o)
-spw_objs=$(addprefix $(OBJDIR)/, sparseworld.o)
+utl_objs=$(addprefix $(OBJDIR)/, sdlutil.o octtree.o)
+spw_objs=$(addprefix $(OBJDIR)/, sparseworld.o world.o)
 obj_objs=$(addprefix $(OBJDIR)/, object.o renderable.o viewport.o)
 glm_objs=$(addprefix $(OBJDIR)/, shader_util.o objloader.o objmodel.o glengine.o glmanager.o glprogrambase.o basicrenderer.o)
 itf_objs=$(addprefix $(OBJDIR)/, ) #interface.o)

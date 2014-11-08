@@ -10,6 +10,7 @@
 class Object {
 public:
 	glm::vec4 position;
+	void * worldsInfoPtr;
 	Object(glm::vec4);
 	void Move(glm::vec4 offset) { position += offset; }
 };

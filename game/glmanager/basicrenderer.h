@@ -11,6 +11,8 @@
 #include "object/viewport.h"
 #include "glprogrambase.h"
 
+//May have to change Render function to virtual.
+
 class BasicRenderer {
 
 	GLuint theProgram;
