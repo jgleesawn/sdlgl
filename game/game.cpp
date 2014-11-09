@@ -4,7 +4,7 @@ Game::Game() : view(glm::vec4(0.0f, 0.0f, 20.0f, 0.0f)) {
 	glEnable(GL_DEPTH_TEST);
 	std::vector<std::string> fileNames;
 
-for( int j=0; j<1; j++ ) {
+for( int j=0; j<10; j++ ) {
 	fileNames.clear();
 	for( int i=0; i<1000; i++ )
 		fileNames.push_back("res/nonTriangle/untitled.obj");
@@ -15,7 +15,7 @@ for( int j=0; j<1; j++ ) {
 	for( int i=0; i<gfxObjs.size(); i++ ) {
 		glm::vec4 pos((float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX, (float)rand()/RAND_MAX );
 		pos *= 500.0f;
-		pos -= 50.0f;
+		pos -= 250.0f;
 		glm::quat q((float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5 );
 		q = glm::normalize(q);
 		renObjs.push_back(new Renderable(pos, gfxObjs[i], q));

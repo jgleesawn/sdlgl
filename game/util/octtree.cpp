@@ -1,6 +1,6 @@
 #include "octtree.h"
 
-bool vecBound( glm::vec4 LL, glm::vec4 UR, glm::vec4 v) {
+int vecBound( const glm::vec4 & LL, const glm::vec4 & UR, const glm::vec4 & v) {
 	int pos = 0;
 	for( int i=0; i<3; i++ ) {
 		pos += (LL[i] > v[i]);
@@ -10,21 +10,20 @@ bool vecBound( glm::vec4 LL, glm::vec4 UR, glm::vec4 v) {
 	return pos;
 }
 
-int vecAdj( glm::vec4 LL, glm::vec4 UR, glm::vec4 v ) {
+int vecAdj( const glm::vec4 & LL, const glm::vec4 & UR, const glm::vec4 & v ) {
 	int adj = 0;
 	for( int i=0; i<3; i++ ) {
-//		std::cout << adj << " ";
 		adj += ((LL[i] <= v[i]) && (UR[i] >= v[i]));
 		adj <<= 1;
 	}
 	adj >>= 1;
-//	std::cout << adj << std::endl;
 	return adj;
 }
 
-Leaf::Leaf(Branch * p, glm::vec4 * v_in) { 
+Leaf::Leaf(Branch * p, glm::vec4 * v_in, void * obj_in) { 
 	parent = p;
 	v = v_in;
+	obj = obj_in;
 	LL = p->LL;
 	UR = p->UR;
 }
@@ -105,7 +104,7 @@ void Branch::addLeaf(Leaf * l) {
 	Nodes[l->pos]->addLeaf(l);
 }
 
-Empty::Empty(Branch * p, int pos_in) : Leaf(p, NULL) { pos = pos_in; } //, LL(LL_in), UR(UR_in) { }
+Empty::Empty(Branch * p, int pos_in) : Leaf(p, NULL, NULL) { pos = pos_in; } //, LL(LL_in), UR(UR_in) { }
 
 //Replaces Empty with added Leaf
 void Empty::addLeaf(Leaf * l) {
@@ -114,7 +113,7 @@ void Empty::addLeaf(Leaf * l) {
 	delete this;
 }
 
-Root::Root(glm::vec4 LL_in, glm::vec4 UR_in) {
+Root::Root(const glm::vec4 & LL_in, const glm::vec4 & UR_in) {
 //	std::cerr << "Root Constructor" << std::endl;
 	parent = NULL;
 	LL = LL_in;
@@ -127,6 +126,7 @@ Root::Root(glm::vec4 LL_in, glm::vec4 UR_in) {
 void Root::addLeaf(Leaf * l) {
 //Adds Leaf to current Bounding Box.
 	int adj = vecAdj(LL, UR, *(l->v));
+
 //	std::cerr << adj << std::endl;
 	if( adj == 7 ) {
 //		std::cout << "if statement" << std::endl;
@@ -135,9 +135,6 @@ void Root::addLeaf(Leaf * l) {
 	}
 //Finds Root's relative position to leaf's
 	int dpos = vecBound(LL, UR, *(l->v));
-	int amask = 7 ^ adj;
-	dpos &= amask;
-	dpos |= adj;
 
 //Sets Root's variables to create replacement branch for extension.
 	parent = this;
@@ -150,22 +147,27 @@ void Root::addLeaf(Leaf * l) {
 
 //Expands Root's bounding box.
 	glm::vec4 size = UR-LL;
-	for( int i=0; i<3; i++ )
-		if( (pos>>i)%2 )
+	for( int i=0; i<3; i++ ) {
+//		std::cout << "i: " << i << " pos[i]: " << (pos>>(2-i))%2 << " adj[i]: " << (adj>>(2-i))%2 << std::endl;
+		if( (adj>>(2-i))%2 ) {
+			continue;
+		}
+		else if( (pos>>(2-i))%2 )
 			LL[i] -= size[i];
 		else
 			UR[i] += size[i];
+	}
 
 //Recurses for Root extension
 	addLeaf(l);
 }
 
-OctTree::OctTree(glm::vec4 LL_in, glm::vec4 UR_in) : Root(LL_in, UR_in) { 
+OctTree::OctTree(const glm::vec4 & LL_in, const glm::vec4 & UR_in) : Root(LL_in, UR_in) { 
 //	std::cerr << "OctTree Constructor" << std::endl;
 }
 
-OctNode * OctTree::addVector(glm::vec4 * v) {
-	Leaf * l = new Leaf(this, v);
+OctNode * OctTree::addVector(glm::vec4 * v, void * obj_in) {
+	Leaf * l = new Leaf(this, v, obj_in);
 	addLeaf(l);
 	return l;
 }

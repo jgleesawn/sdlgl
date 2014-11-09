@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
+#include <stdio.h>
 
 enum octCorner {
 	LLB, LLF, LUB, LUF,
@@ -17,11 +18,11 @@ enum octCorner {
 
 //Returns box's relative position to v
 //Combine result with adjacenty information from vecAdj
-bool vecBound( glm::vec4 LL, glm::vec4 UR, glm::vec4 v);
+int vecBound( const glm::vec4 & LL, const glm::vec4 & UR, const glm::vec4 & v);
 
 //Returns dimensions that bound v
 //Can be used for "adjacency" through bounding in less than all dimensions
-int vecAdj( glm::vec4 LL, glm::vec4 UR, glm::vec4 v );
+int vecAdj( const glm::vec4 & LL, const glm::vec4 & UR, const glm::vec4 & v );
 
 class OctNode;
 class Branch;
@@ -29,7 +30,7 @@ class Leaf;
 
 class OctNode {
 protected:
-//public:
+public:
 	Branch * parent;
 	glm::vec4 LL, UR;
 	int pos;
@@ -39,7 +40,7 @@ public:
 
 class Branch : public OctNode {
 protected:
-//public:
+public:
 	OctNode * Nodes[8];
 	int ncount;
 	Branch() {}	//Is a hack so Root can use in constructor
@@ -55,7 +56,7 @@ public:
 
 class Root : public Branch {
 public:
-	Root(glm::vec4, glm::vec4);
+	Root(const glm::vec4 &, const glm::vec4 &);
 	virtual void addLeaf(Leaf *);
 };
 
@@ -63,8 +64,9 @@ public:
 class Leaf : public OctNode {
 protected:
 	glm::vec4 * v;
+	void * obj;
 public:
-	Leaf(Branch *, glm::vec4 *);
+	Leaf(Branch *, glm::vec4 *, void *);
 	virtual void addLeaf(Leaf *);
 	virtual void update();
 
@@ -81,8 +83,8 @@ public:
 
 class OctTree : public Root {
 public:
-	OctTree(glm::vec4, glm::vec4);
-	OctNode * addVector(glm::vec4 *);
+	OctTree(const glm::vec4 &, const glm::vec4 &);
+	OctNode * addVector(glm::vec4 *, void *);
 };
 
 #endif
