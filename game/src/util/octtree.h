@@ -85,6 +85,8 @@ class OctTree : public Root {
 public:
 	OctTree(const glm::vec4 &, const glm::vec4 &);
 	OctNode * addVector(glm::vec4 *, void *);
+	OctNode * findClosest(const glm::vec4 &);
+	OctNode * findClosestTo(Leaf *);
 };
 
 #endif

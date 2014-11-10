@@ -1,6 +1,9 @@
 Requires:
+	cmake
 	SDL2
-	SDL2_image
+	GLEW
+	GLM
+	PCL
+	Eigen
+	FLANN
 	openGL
-	openCL
-	glew?

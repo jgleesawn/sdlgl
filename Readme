@@ -4,6 +4,11 @@ GLEW
 GLM
 SDL2
 
+Boost
+Eigen
+FLANN
+PCL
+
 Todo:
 ObjectManager
 	-Importing

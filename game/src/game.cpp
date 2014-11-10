@@ -46,6 +46,12 @@ void Game::Loop() {
 //	std::cout << w.ot.UR[0] << std::endl;
 	interface.Loop(&view);
 
+	for( int i=0; i<renObjs.size(); i++ )
+		renObjs[i]->position += glm::vec4((float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, 0);
+	for( int i=0; i<renObjs.size(); i++ )
+		((Leaf *)(renObjs[i]->worldsInfoPtr))->update();
+	
+
 	glClearColor(0,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	for( int i=0; i<renObjs.size(); i++ )

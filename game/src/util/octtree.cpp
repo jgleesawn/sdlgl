@@ -34,17 +34,21 @@ void Leaf::addLeaf(Leaf * l) {
 
 //Finds lowest level Branch with bounding box that contains Leaf
 void Leaf::update() {
-	Branch * p = parent;
-	while( vecAdj(p->LL, p->UR, *v) != 7 && p->parent != NULL ) {
-		p->ncount--;
-		p = p->parent;
-	}
-	p->ncount--;	//Will be reincremented when node is added.
-
-	LL=p->LL;
-	UR=p->UR;
 	parent->Nodes[pos] = new Empty(parent,pos);
-	p->addLeaf(this);
+
+	Branch * p = NULL;
+	while( vecAdj(parent->LL, parent->UR, *v) != 7 && parent->parent != NULL ) {
+		p = parent;
+		parent = parent->parent;
+		p->ncount--;
+		if( !p->ncount )
+			delete p;
+	}
+	parent->ncount--;	//Will be reincremented when node is added.
+
+	LL=parent->LL;
+	UR=parent->UR;
+	parent->addLeaf(this);
 }
 
 //Copy Constructor for Branch
@@ -109,6 +113,7 @@ Empty::Empty(Branch * p, int pos_in) : Leaf(p, NULL, NULL) { pos = pos_in; } //,
 //Replaces Empty with added Leaf
 void Empty::addLeaf(Leaf * l) {
 	parent->Nodes[pos] = l;
+	l->parent = parent;
 //	std::cout << "Empty::addLeaf" << std::endl;
 	delete this;
 }
