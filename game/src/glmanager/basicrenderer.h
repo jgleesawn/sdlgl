@@ -22,6 +22,7 @@ public:
 	~BasicRenderer() { glDeleteProgram(theProgram); }
 
 	void Render(Renderable *, Viewport *);
+	void Render(Renderable *, glm::vec4, Viewport *, glm::vec4);
 
 	void reshape(int, int);
 };

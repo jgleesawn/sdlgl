@@ -2,18 +2,31 @@
 
 #include <iostream>
 
-void printv(const glm::vec4 & v) {
-	for( int i=0; i<4; i++ )
-		std::cout << v[i] << " ";
-	std::cout << std::endl;
+World::World() : octree(1.0f)
+		, cloud(new pcl::PointCloud<pcl::PointXYZ>) {
+//	cloud->width = 0;
+//	cloud->height = 1;
+//	cloud->points.resize(0);
+	octree.setInputCloud(cloud);
 }
 
-World::World() : ot(glm::vec4(-200, -200, -200, 0), glm::vec4(200, 200, 200, 0)) {
-	printv(ot.LL);
-	printv(ot.UR);
-	printv(ot.UR-ot.LL);
+void World::addObject( Object * obj, glm::vec4 pos ) {
+	cloud->push_back(*((pcl::PointXYZ *)(&(obj->position[0]))));
+	obj->index = cloud->size()-1;
 }
 
-void World::addObject( Object * obj ) {
-	obj->worldsInfoPtr = ot.addVector(&obj->position, (void * ) obj);
+void World::update() {
+	octree.deleteTree();
+	octree.addPointsFromInputCloud();
 }
+
+void World::Wiggle() {
+	for( int i=0; i<renObjs.size(); i++ ) {
+		cloud->points[renObjs[i]->index].x += (float)rand()/RAND_MAX - .5;
+		cloud->points[renObjs[i]->index].y += (float)rand()/RAND_MAX - .5;
+		cloud->points[renObjs[i]->index].z += (float)rand()/RAND_MAX - .5;
+	}
+}
+
+
+

@@ -1,5 +1,6 @@
 #include "object.h"
 
+
 Object::Object(glm::vec4 pos_in) : position(pos_in) {}
 
 Orientable::Orientable(glm::vec4 pos_in, glm::quat or_in) : Object(pos_in), orientation(or_in) { }
@@ -24,6 +25,11 @@ void Orientable::rotParallel(float rad) {
 */
 void printv(const glm::vec3 & v) {
 	for( int i=0; i<3; i++ )
+		std::cout << v[i] << " ";
+	std::cout << std::endl;
+}
+void printv(const glm::vec4 & v) {
+	for( int i=0; i<4; i++ )
 		std::cout << v[i] << " ";
 	std::cout << std::endl;
 }

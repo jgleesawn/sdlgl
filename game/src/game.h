@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "glmanager/glengine.h"
-#include "sparseworld/sparseworld.h"
 #include "interface/interface.h"
 
 #include "sparseworld/world.h"
@@ -22,7 +21,6 @@ public:
 	BasicRenderer ren;
 	Viewport view;
 	World w;
-	SparseWorld sw;
 
 	std::vector<input> inputs;
 

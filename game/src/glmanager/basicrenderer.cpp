@@ -27,21 +27,25 @@ BasicRenderer::BasicRenderer() {
 
 //Transpose = GL_TRUE because GLSL uses Column-Major where C++ typicall uses Row-Major
 void BasicRenderer::Render( Renderable * objs, Viewport * view ) {
-//	glm::mat4 orotMat = glm::toMat4(glm::rotation(glm::vec3(0.0f, 0.0f, 1.0f), objs->orientation));
 	glm::mat4 orotMat = glm::toMat4(objs->orientation);
 	glm::mat4 vrotMat = view->getRotMat();
-//	glm::mat4 vrotMat = glm::toMat4(glm::rotation(glm::vec3(0.0f, 0.0f, -1.0f), view->orientation));
-
-//	glm::mat4 orotMat = glm::toMat4(objs->orientation);
-//	glm::mat4 vrotMat = glm::toMat4(view->orientation);
-//	glm::mat4 vrotMat = glm::eulerAngleYXZ(view->orientation[1], view->orientation[0], view->orientation[2]);
 
 	glUseProgram(theProgram);
 	glUniform4f(uvar[0], objs->position[0], objs->position[1], objs->position[2], 0.0f);
 	glUniformMatrix4fv(uvar[1], 1, GL_TRUE, &orotMat[0][0]);
 	glUniform4f(uvar[2], view->position[0], view->position[1], view->position[2], 0.0f);
 	glUniformMatrix4fv(uvar[3], 1, GL_TRUE, &vrotMat[0][0] );
-//	glUniformMatrix4fv(uvar[3], 1, GL_TRUE, &view->orientation[0][0]);
+	glUniformMatrix4fv(uvar[4], 1, GL_TRUE, &view->perspectiveMatrix[0][0]);
+}
+void BasicRenderer::Render( Renderable * objs, glm::vec4 op, Viewport * view, glm::vec4 vp ) {
+	glm::mat4 orotMat = glm::toMat4(objs->orientation);
+	glm::mat4 vrotMat = view->getRotMat();
+
+	glUseProgram(theProgram);
+	glUniform4f(uvar[0], op[0], op[1], op[2], 0.0f);
+	glUniformMatrix4fv(uvar[1], 1, GL_TRUE, &orotMat[0][0]);
+	glUniform4f(uvar[2], vp[0], vp[1], vp[2], 0.0f);
+	glUniformMatrix4fv(uvar[3], 1, GL_TRUE, &vrotMat[0][0] );
 	glUniformMatrix4fv(uvar[4], 1, GL_TRUE, &view->perspectiveMatrix[0][0]);
 }
 

@@ -1,6 +1,7 @@
 #include "game.h"
 
 Game::Game() : view(glm::vec4(0.0f, 0.0f, 20.0f, 0.0f)) {
+	w.addObject(&view, view.position);
 	glEnable(GL_DEPTH_TEST);
 	std::vector<std::string> fileNames;
 
@@ -18,14 +19,11 @@ for( int j=0; j<10; j++ ) {
 		pos -= 250.0f;
 		glm::quat q((float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5 );
 		q = glm::normalize(q);
-		renObjs.push_back(new Renderable(pos, gfxObjs[i], q));
-		w.addObject(renObjs.back());
+		Renderable * ro = new Renderable(pos, gfxObjs[i], q);
+		w.addObject(ro,pos);
+		w.renObjs.push_back(ro);
 	}
 }
-//	std::cout << w.ot.ncount << std::endl;
-	for( int i=0; i<8; i++ )
-		std::cout << ((Branch *)(w.ot.Nodes[i]))->ncount << " ";
-	std::cout << std::endl;
 
 	interface.m[&Viewport::rotUp] = SDL_SCANCODE_UP;
 	interface.m[&Viewport::rotDown] = SDL_SCANCODE_DOWN;
@@ -46,16 +44,20 @@ void Game::Loop() {
 //	std::cout << w.ot.UR[0] << std::endl;
 	interface.Loop(&view);
 
-	for( int i=0; i<renObjs.size(); i++ )
-		renObjs[i]->position += glm::vec4((float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, (float)rand()/RAND_MAX - .5, 0);
-	for( int i=0; i<renObjs.size(); i++ )
-		((Leaf *)(renObjs[i]->worldsInfoPtr))->update();
+	w.Wiggle();
+	w.update();
 	
-
 	glClearColor(0,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	for( int i=0; i<renObjs.size(); i++ )
-		gle.Render(&ren, renObjs[i], &view);
+	glm::vec4 * vpos = (glm::vec4 *)&(w.cloud->points[0]);
+//	printv(vpos);
+//	printv(view.position);
+	for( int i=0; i<w.renObjs.size(); i++ ) {
+		glm::vec4 * opos = (glm::vec4 *)&(w.cloud->points[w.renObjs[i]->index]);
+		//gle.Render(&ren, w.renObjs[i], &view);
+		gle.Render(&ren, w.renObjs[i], *opos, &view, view.position);
+		//gle.Render(&ren, w.renObjs[i], w.renObjs[i]->position, &view, view->position);
+	}
 }
 
 
