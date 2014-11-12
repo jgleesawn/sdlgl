@@ -31,15 +31,14 @@ struct ObjGroup {
 
 
 class GLmanager {
+public:
 	std::vector<ObjGroup *> gfxObjs;
 
-public:
 	GLmanager() {}
 	~GLmanager();
 	std::vector<gfxObj_t> Load(const std::vector< objModel > & vobj );//std::vector<std::vector<glm::vec4 > * > * vbos_in, std::vector< std::vector<int> * > * ibos_in);
 	std::vector<gfxObj_t> Load(const std::vector< std::string > & );
 	void Update(gfxObj_t, std::vector<float>);
-	void Render(gfxObj_t);
 };
 
 #endif

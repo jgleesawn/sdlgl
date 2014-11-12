@@ -10,19 +10,27 @@
 #include "object/renderable.h"
 #include "object/viewport.h"
 #include "glprogrambase.h"
+#include "glmanager.h"
 
 //May have to change Render function to virtual.
 
 class BasicRenderer {
+	GLmanager * glm;
 
 	GLuint theProgram;
-	GLint uvar[5];	//Uniform variables used because #120 doesn't support explicit locations
+	GLint uvar[6];	//Uniform variables used because #120 doesn't support explicit locations
 public:
 	BasicRenderer();
 	~BasicRenderer() { glDeleteProgram(theProgram); }
 
-	void Render(Renderable *, Viewport *);
-	void Render(Renderable *, glm::vec4, Viewport *, glm::vec4);
+	void setGLM(GLmanager *);
+
+	void Use() { glUseProgram(theProgram); }
+	void setCameraRotationPerspective(const glm::mat4 &, const glm::mat4 & );
+	void setCameraPos(const glm::vec4 &);
+
+	void Render(Renderable *, const glm::vec4 &);
+	void Wireframe(Renderable *, const glm::vec4 &);
 
 	void reshape(int, int);
 };

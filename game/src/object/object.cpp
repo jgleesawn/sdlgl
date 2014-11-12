@@ -1,15 +1,13 @@
 #include "object.h"
 
 
-Object::Object(glm::vec4 pos_in) : position(pos_in) {}
+Object::Object(glm::vec4 pos_in, glm::quat or_in, float p_in, float y_in) : position(pos_in), orientation(or_in), pitch(p_in), yaw(y_in) { }
 
-Orientable::Orientable(glm::vec4 pos_in, glm::quat or_in) : Object(pos_in), orientation(or_in) { }
-
-void Orientable::dQuat(const glm::quat & q) {
+void Object::dQuat(const glm::quat & q) {
 	orientation *= q;
 }
 /*
-void Orientable::rotParallel(float rad) {
+void Object::rotParallel(float rad) {
 	glm::quat q;
 	q.x = verticle.x*glm::sin(rad/2.0f);
 	q.y = verticle.y*glm::sin(rad/2.0f);
@@ -47,7 +45,7 @@ void printm( const glm::mat4 & m) {
 	std::cout << std::endl;
 }
 /*
-void Orientable::rotPerpendicular(float rad) {
+void Object::rotPerpendicular(float rad) {
 	glm::vec3 v = verticle;
 	glm::vec3 ov = orientation;
 	glm::vec3 c = glm::cross(v, ov);
@@ -57,3 +55,29 @@ void Orientable::rotPerpendicular(float rad) {
 	orientation = glm::rotate(q, orientation);
 }
 */
+
+glm::vec4 Object::getForward() {
+	return glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)*getRotMat();
+}
+
+glm::vec4 Object::getRight() {
+	return glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)*getRotMat();
+}
+
+glm::vec4 Object::getUp() {
+	return glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)*getRotMat();
+}
+
+glm::mat4 Object::getRotMat() {
+	return glm::eulerAngleXY(pitch, yaw);
+}
+
+void Object::rotY(float rad) {
+	yaw += rad;
+}
+
+void Object::rotX(float rad) {
+	pitch += rad;
+}
+
+

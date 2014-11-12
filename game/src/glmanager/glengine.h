@@ -9,12 +9,4 @@
 #include "object/renderable.h"
 #include "sparseworld/world.h"
 
-class GLEngine {
-public:
-	GLmanager glm;
-	void Render( BasicRenderer *, Renderable *, Viewport * );
-	void Render( BasicRenderer *, Renderable *, glm::vec4, Viewport *, glm::vec4 );
-	GLEngine() { glewInit(); }
-};
-
 #endif

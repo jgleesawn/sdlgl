@@ -84,22 +84,4 @@ std::vector<gfxObj_t> GLmanager::Load(const std::vector< std::string > & fileNam
 	return Load(vobj);
 }
 
-void GLmanager::Render(gfxObj_t goID) {
-	GLuint vao = gfxObjs.at(goID.vao)->VAO;
-	int ind = goID.ind;
-
-	glBindVertexArray(vao);
-
-	int count = gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind+1) - gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind);
-	int indoffset = gfxObjs.at(goID.vao)->IBOStartingIndices.at(goID.ind) * gfxObjs.at(goID.vao)->ibo_struct_size;
-	int baseoffset = gfxObjs.at(goID.vao)->VBOStartingIndices.at(goID.ind);
-//	glDrawElementsBaseVertex( GL_LINES, count, GL_UNSIGNED_INT, (void*)indoffset, baseoffset);
-	glDrawElementsBaseVertex( GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)indoffset, baseoffset);
-//	glDrawElementsBaseVertex( GL_POINTS, count, GL_UNSIGNED_INT, (void*)indoffset, baseoffset);
-
-	glBindVertexArray(0);
-}
-
-
-
 

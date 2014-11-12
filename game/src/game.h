@@ -17,19 +17,21 @@
 class Game {
 	
 public:
-	GLEngine gle;
-	BasicRenderer ren;
-	Viewport view;
+	GLmanager glm;
+	BasicRenderer * ren;
+	Viewport * view;
 	World w;
 
 	std::vector<input> inputs;
 
 	std::vector<gfxObj_t> gfxObjs;
-	std::vector<Renderable *> renObjs;
+//	std::vector<Renderable *> renObjs;
 
-	Interface<Viewport> interface;
+//	Interface<Viewport> interface;
+	Interface<World> interface;
 
 	Game();
+	~Game();
 	void addInput(const void *, int, int);
 	void Loop();
 };

@@ -29,5 +29,5 @@ void main()
 {
 	vec4 vertexPos = vec4(vertexCoord.xyz, 1.0f);
 	vertexPos = ( vertexPos * objRotation ) + objPosition;// + vec4(5.0, 5.0, -10.0, 0.0);
-	gl_Position = ( vertexPos + viewOffset ) * (viewRotation * Perspective);
+	gl_Position = ( vertexPos - viewOffset ) * (viewRotation * Perspective);
 }
