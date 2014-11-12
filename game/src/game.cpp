@@ -85,6 +85,7 @@ void Game::Loop() {
 		glm::vec4 * opos = (glm::vec4 *)&(w.cloud->points[w.renObjs[i]->index]);
 		ren->Render(w.renObjs[i], *opos);
 	}
+//Starts at begin()+1 because the closest to the camera is the camera itself. //assumption
 	std::vector<int>::iterator it;
 	for( it = w.selection.begin()+1; it != w.selection.end(); it++ ) {
 		glm::vec4 * opos = (glm::vec4 *)&(w.cloud->points[*it]);
